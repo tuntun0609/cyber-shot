@@ -1,0 +1,35 @@
+[
+  {
+    "id": "h-001",
+    "name": "八字刘海锁骨内扣发",
+    "promptEn": "Natural dark brown collarbone-length hair, center-parted curtain bangs opening into an inverted V and blending into cheek-framing side layers, smooth mostly straight lengths with subtle low layers and softly inward-curled ends, moderate natural volume and realistic individual strands.",
+    "promptZh": "自然深棕色锁骨发，中分八字刘海向两侧展开，与修饰脸颊的侧边层次自然衔接；主体顺直、低层次，发尾柔和内扣，发量适中，发丝质感真实自然。",
+    "tags": ["锁骨发", "八字刘海", "中分", "内扣", "低层次", "披发"],
+    "gender": "female",
+    "image": "/hairstyles/h-001.png",
+    "imageAspectRatio": 1.5,
+    "thumb": "/hairstyles/h-001.thumb.webp"
+  },
+  {
+    "id": "h-002",
+    "name": "轻薄齐刘海齐颈波波头",
+    "promptEn": "Natural black chin-to-upper-neck-length bob, wispy straight-across bangs grazing the eyebrows with small gaps between strands and slightly longer corners blending into cheek-framing side pieces, softly rounded crown and ears mostly covered, smooth mostly straight lengths with subtle low layers and gently inward-curved ends, a compact rounded silhouette with airy textured tips and realistic individual strands.",
+    "promptZh": "自然黑色齐颈波波头，长度在下巴至上颈部之间；轻薄齐刘海落在眉眼之间，发束间留有自然缝隙，两侧略长并衔接修饰脸颊的侧发；头顶柔和蓬松，基本遮住耳朵，主体顺直、低层次，发尾轻微内扣，轮廓圆润紧凑，发梢轻盈有纹理，发丝质感真实自然。",
+    "tags": ["短发", "波波头", "齐刘海", "齐颈", "内扣", "黑发"],
+    "gender": "female",
+    "image": "/hairstyles/h-002.png",
+    "imageAspectRatio": 1.5,
+    "thumb": "/hairstyles/h-002.thumb.webp"
+  },
+  {
+    "id": "h-003",
+    "name": "微厚齐刘海齐颈波波头",
+    "promptEn": "Natural black chin-to-upper-neck-length bob, moderately dense straight-across bangs grazing the eyebrows, softly covering the forehead with only a few narrow strand separations and lightly textured tips, slightly longer corners blending into cheek-framing side pieces, softly rounded crown and ears mostly covered, smooth mostly straight lengths with subtle low layers and gently inward-curved ends, a compact rounded silhouette with airy textured tips and realistic individual strands.",
+    "promptZh": "自然黑色齐颈波波头，长度在下巴至上颈部之间；齐刘海落在眉眼之间，厚度适中，较轻薄款略厚，柔和覆盖额头，仅保留少量细窄发束缝隙，末端自然轻盈；两侧略长并衔接修饰脸颊的侧发，头顶柔和蓬松，基本遮住耳朵，主体顺直、低层次，发尾轻微内扣，轮廓圆润紧凑，发梢轻盈有纹理，发丝质感真实自然。",
+    "tags": ["短发", "波波头", "齐刘海", "微厚刘海", "齐颈", "内扣", "黑发"],
+    "gender": "female",
+    "image": "/hairstyles/h-003.png",
+    "imageAspectRatio": 1.5,
+    "thumb": "/hairstyles/h-003.thumb.webp"
+  }
+]
