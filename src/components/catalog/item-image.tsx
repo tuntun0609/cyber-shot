@@ -6,12 +6,14 @@ export function ItemImage({
   priority,
   sizes,
   src,
+  unoptimized = false,
 }: {
   alt: string;
   className?: string;
   priority?: boolean;
   sizes: string;
   src: string;
+  unoptimized?: boolean;
 }) {
   return (
     <Image
@@ -21,8 +23,8 @@ export function ItemImage({
       priority={priority}
       sizes={sizes}
       src={src}
-      // SVG 无需图片优化
-      unoptimized={src.endsWith(".svg")}
+      // SVG 和预压缩缩略图无需再次优化。
+      unoptimized={unoptimized || src.endsWith(".svg")}
     />
   );
 }

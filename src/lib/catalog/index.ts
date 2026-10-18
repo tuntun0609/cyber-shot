@@ -71,6 +71,7 @@ export function toView(item: CatalogItem): ItemView {
     promptZh: item.promptZh,
     skeletonSrc: item.skeleton ? imageUrl(item.skeleton) : undefined,
     tags: item.tags,
+    thumbAspectRatio: item.thumbAspectRatio,
     thumbSrc: imageUrl(item.thumb),
   };
 }
