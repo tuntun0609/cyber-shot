@@ -27,6 +27,7 @@ export interface ItemView {
   promptZh: string;
   skeletonSrc?: string;
   tags: string[];
+  thumbAspectRatio?: number;
   thumbSrc: string;
 }
 

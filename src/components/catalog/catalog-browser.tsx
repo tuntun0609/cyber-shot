@@ -340,19 +340,50 @@ function TagFilter({
 
 function ItemCard({ item }: { item: ItemView }) {
   const href = `/${item.category}/${item.id}`;
+  const previewAspectRatio = 4 / 5;
+  const thumbAspectRatio = item.thumbAspectRatio ?? previewAspectRatio;
+  const imageSizes =
+    "(min-width: 1280px) 20vw, (min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw";
   return (
-    <li>
-      <Card className="group relative gap-0 py-0 transition-shadow duration-200 can-hover:hover:ring-foreground/20">
+    <li className="min-w-0">
+      <Card className="group relative h-full gap-0 py-0 transition-shadow duration-200 can-hover:hover:ring-foreground/20">
         <Link
-          className="relative block aspect-2/3 overflow-hidden bg-muted"
+          className="relative block aspect-4/5 shrink-0 overflow-hidden bg-muted"
           href={href}
         >
-          <ItemImage
-            alt={item.name}
-            className="object-cover transition-transform duration-300 ease-out can-hover:group-hover:scale-[1.03]"
-            sizes="(min-width: 1280px) 20vw, (min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw"
-            src={item.thumbSrc}
-          />
+          <div
+            aria-hidden="true"
+            className="absolute inset-0"
+            style={{
+              transform: `scale(${Math.max(1, previewAspectRatio / thumbAspectRatio) * 1.1})`,
+            }}
+          >
+            <ItemImage
+              alt=""
+              className="object-cover opacity-70 blur-2xl"
+              sizes={imageSizes}
+              src={item.thumbSrc}
+              unoptimized={item.thumbSrc.endsWith(".webp")}
+            />
+          </div>
+          {/* 有效画面完整居中显示，同图模糊铺底填满剩余空间。 */}
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div
+              className="relative shrink-0"
+              style={{
+                height: `${Math.min(1, previewAspectRatio / thumbAspectRatio) * 100}%`,
+                width: `${Math.min(1, thumbAspectRatio / previewAspectRatio) * 100}%`,
+              }}
+            >
+              <ItemImage
+                alt={item.name}
+                className="object-cover"
+                sizes={imageSizes}
+                src={item.thumbSrc}
+                unoptimized={item.thumbSrc.endsWith(".webp")}
+              />
+            </div>
+          </div>
         </Link>
         <CopyButton
           className="absolute top-2 right-2 can-hover:opacity-0 shadow-sm transition-opacity duration-200 focus-visible:opacity-100 can-hover:group-hover:opacity-100 can-hover:data-copied:opacity-100"
@@ -361,7 +392,7 @@ function ItemCard({ item }: { item: ItemView }) {
           text={item.promptZh}
           variant="secondary"
         />
-        <div className="grid gap-2 p-3">
+        <div className="flex flex-1 flex-col gap-2 p-3">
           <Link
             className="min-w-0 truncate font-medium text-sm transition-colors can-hover:hover:text-primary"
             href={href}
@@ -376,7 +407,7 @@ function ItemCard({ item }: { item: ItemView }) {
             ))}
             <Badge variant="outline">{GENDER_LABELS[item.gender]}</Badge>
           </div>
-          <span className="font-mono text-muted-foreground text-xs">
+          <span className="mt-auto font-mono text-muted-foreground text-xs">
             {item.id.toUpperCase()}
           </span>
         </div>
@@ -644,7 +675,7 @@ export function CatalogBrowser({ items }: { items: ItemView[] }) {
           ) : null}
 
           {visible.length > 0 ? (
-            <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+            <ul className="grid auto-rows-fr grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
               {visible.map((item) => (
                 <ItemCard item={item} key={item.id} />
               ))}
@@ -687,8 +718,9 @@ export function CatalogBrowserFallback() {
         <ul className="grid grid-cols-2 gap-3 px-4 py-5 sm:grid-cols-3 md:px-6 lg:grid-cols-4 xl:grid-cols-5">
           {Array.from({ length: 10 }, (_, index) => (
             // biome-ignore lint/suspicious/noArrayIndexKey: 骨架屏没有业务 id
-            <li key={index}>
-              <Skeleton className="aspect-2/3 rounded-2xl" />
+            <li className="overflow-hidden rounded-2xl" key={index}>
+              <Skeleton className="aspect-4/5 rounded-none" />
+              <Skeleton className="h-28 rounded-none" />
             </li>
           ))}
         </ul>

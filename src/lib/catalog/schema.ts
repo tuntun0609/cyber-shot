@@ -22,6 +22,8 @@ const baseItem = z.object({
   promptZh: z.string().min(1),
   tags: z.array(z.string().min(1)),
   thumb: z.string().min(1),
+  // 有效画面宽高比：去掉缩略图两侧填充后，完整放入统一预览框。
+  thumbAspectRatio: z.number().positive().optional(),
 });
 
 function itemSchema(category: Category) {
