@@ -1,0 +1,22 @@
+[
+  {
+    "id": "f-001",
+    "name": "清冷鹅蛋脸",
+    "promptEn": "an adult woman with an oval face, soft jawline, almond eyes and a calm, cool expression",
+    "promptZh": "成年女性，鹅蛋脸，下颌线柔和，杏仁眼，神情清冷平静",
+    "tags": ["清冷", "鹅蛋脸"],
+    "gender": "female",
+    "image": "faces/f-001.webp",
+    "thumb": "faces/f-001.thumb.webp"
+  },
+  {
+    "id": "f-002",
+    "name": "棱角分明硬朗脸",
+    "promptEn": "an adult man with a defined square jaw, strong brow line and deep-set eyes",
+    "promptZh": "成年男性，方下颌轮廓分明，眉骨突出，眼窝深",
+    "tags": ["硬朗", "方脸"],
+    "gender": "male",
+    "image": "faces/f-002.webp",
+    "thumb": "faces/f-002.thumb.webp"
+  }
+]
