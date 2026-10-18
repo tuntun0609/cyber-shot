@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "skills": {
+    "generate-pose-mannequin-lineart": {
+      "source": "tuntun0609/portrait-shot-director",
+      "sourceType": "github",
+      "skillPath": "skills/generate-pose-mannequin-lineart/SKILL.md",
+      "computedHash": "b248d6a93737e8bbccd2f45f18fdc18f4ad65a83986d2ed41716e580271af555"
+    }
+  }
+}
