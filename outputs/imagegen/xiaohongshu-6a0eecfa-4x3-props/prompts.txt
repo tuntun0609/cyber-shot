@@ -1,0 +1,27 @@
+生成工具：内置 imagegen
+统一画幅：横向 4:3（1448×1086）。
+本次更新：第 3 张保留抽象眼镜并去除关节分割线；第 4 张保留抽象眼镜和饮料瓶；第 5 张保留抽象饮料瓶。
+道具：保留比例、透视、接触点和手指遮挡；黑线白底；无品牌、文字和阴影。
+第 1、2、6、7 张沿用上一版；第 7 张原有细杆残线仍在。
+
+===== 更新 03 的最终提示词 =====
+Use case: style-transfer. Produce one clean black contour drawing of a featureless gender-neutral white artist mannequin in Image 1's exact seated pose, WITH its worn glasses abstracted to simple unbranded outline frames.
+Input Image 1 (photo) is the ONLY pose, body proportions, joint placement, camera angle, hands, glasses and occlusion reference. Image 2 (different-pose line drawing) controls ONLY seamless contour style, black line weight, smooth body abstraction and white background. NEVER copy Image 2 pose, crop, hands or limb placement.
+Canvas landscape 4:3, 1448x1086 preferred. Adapt the portrait reference by adding white side margins; keep all originally visible extremities. Seated leaning slightly back, viewer-left knee higher, nearer leg lower in foreground, feet point toward viewer-left. Viewer-left arm bent up/out with forearm reaching temple and fingers pinching upper-left eyeglass corner. Other arm extended diagonally down-right, hand lightly curled over absent seat edge. Preserve head tilt, shoulder slope, spine, pelvis elevation, knee spacing, original grip and each visible finger's flexion and overlap. Do not mirror, straighten, frontalize or symmetrize.
+RETAIN GLASSES: simple two rounded rectangular lens-frame outlines, small bridge and visible temples aligned in perspective with the head, slightly diagonally tilted as in source; raised thumb/index grip at original outer upper corner. Lenses contain only white; NO eyes, nose, brows or other facial features.
+White interior, pure white background, uniform smooth BLACK thin-to-medium lines. Seamless neutral body with smooth uninterrupted outer contour; NO joint rings, shoulder caps, waist seam, central torso seam, segmented pelvis, knee caps or construction lines. Head bald, blank, no ears or internal marks except the explicitly requested glasses. Keep only necessary overlaps and finger boundaries. Feet plain rounded mannequin forms without shoes.
+Remove clothing, hair, all setting, seat, snacks, ground bottle, bags, skin details, fingernails, labels, shadows, gray and shading. Glasses are the only retained prop. Return a single image.
+
+===== 更新 04 的最终提示词 =====
+Edit the existing artist mannequin illustration in Image 1 by adding only two simple props: the eyeglasses and capped water bottle visible in Image 2. This is a drawing-study reference.
+Keep Image 1's existing illustration, pose, body shape, hands, line style, pure white background and landscape 4:3 dimensions unchanged.
+Eyeglasses: two rounded rectangular empty outline frames with bridge and side arms, worn at exactly the angle and position shown in Image 2. Do not add a face.
+Bottle: an unbranded plain capped bottle held between the two hands exactly as in Image 2, almost vertical, with its cap under the chin. Outline cylinder, sloping shoulder, neck and cap only; omit label and text. Preserve finger contact and overlap with the bottle. Finger contours should visibly pass in front of bottle where appropriate.
+Match the illustration's smooth thin black lines and white interiors. No shading, logos, text or extra objects. Return one edited image.
+
+===== 更新 05 的最终提示词 =====
+Edit the existing artist mannequin illustration in Image 1 by adding only the capped beverage bottle held in the raised hand. Image 2 is the original photo for the bottle's geometry, scale, perspective, orientation and exact hand-object contact. This is an artist's pose-study reference.
+Keep Image 1's existing pose, body contours, blank head, finger positions, lower-body crop, smooth black-line style, pure white background and landscape 4:3 dimensions unchanged, preferably exactly 1448x1086.
+Draw one simple bottle with white interior and thin black outline: rounded cylindrical body, sloping shoulders, narrow neck and cap. Bottle body sits inside raised hand's curved grasp on viewer-left; bottle's axis inclines diagonally up-right toward lower side of blank face as in Image 2. The thumb supports underneath toward viewer-right, four curled fingers wrap around body and overlap in front. Preserve grasp geometry and hand contacts. This hand already has five visible digits; do not add or duplicate any. Keep the cap near the lower face without inventing a mouth.
+No label, text, brand, plastic ridges, liquid color, shading, gray, or extra objects. No glasses (not worn in source). Preserve all other illustration details; do not symmetrize or mirror. Return one image.
+

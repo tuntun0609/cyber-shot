@@ -340,7 +340,8 @@ function TagFilter({
 
 function ItemCard({ item }: { item: ItemView }) {
   const href = `/${item.category}/${item.id}`;
-  const previewAspectRatio = 4 / 5;
+  const previewAspectRatio =
+    item.category === "pose" ? (item.thumbAspectRatio ?? 3 / 4) : 4 / 5;
   const thumbAspectRatio = item.thumbAspectRatio ?? previewAspectRatio;
   const imageSizes =
     "(min-width: 1280px) 20vw, (min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw";
@@ -348,8 +349,9 @@ function ItemCard({ item }: { item: ItemView }) {
     <li className="min-w-0">
       <Card className="group relative h-full gap-0 py-0 transition-shadow duration-200 can-hover:hover:ring-foreground/20">
         <Link
-          className="relative block aspect-4/5 shrink-0 overflow-hidden bg-muted"
+          className="relative block shrink-0 overflow-hidden bg-muted"
           href={href}
+          style={{ aspectRatio: previewAspectRatio }}
         >
           <div
             aria-hidden="true"
