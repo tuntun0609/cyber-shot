@@ -382,5 +382,17 @@
     "thumb": "/hairstyles/h-032.thumb.webp",
     "imageAspectRatio": 1.5,
     "thumbAspectRatio": 0.5
+  },
+  {
+    "id": "h-033",
+    "name": "日系中长层次狼尾",
+    "gender": "female",
+    "promptZh": "自然深棕色，日系中长层次狼尾，中性偏少年感轮廓；轻盈偏分窗帘刘海，颧骨至下颌有明显修饰层次，顶部蓬松、两侧与后颈做高层次碎剪，后颈保留更长的羽毛状发束至肩部，形成前短后长的狼尾轮廓，发丝自然轻盈。",
+    "promptEn": "Natural dark brown hair. Medium-length Japanese layered wolf cut with an androgynous, slightly boyish character; airy off-center curtain fringe, cheekbone-to-jaw face-framing layers, a lifted crown, visibly feathered high layers around the sides, and a longer wispy nape reaching the shoulders for a soft short-to-long wolf silhouette. Realistic individual strands.",
+    "tags": ["中性", "短发", "中长发", "日系", "狼尾", "高层次", "碎刘海"],
+    "image": "/hairstyles/h-033.png",
+    "thumb": "/hairstyles/h-033.thumb.webp",
+    "imageAspectRatio": 1.5,
+    "thumbAspectRatio": 0.5
   }
 ]
