@@ -2,7 +2,6 @@
 
 import {
   CircleUserRoundIcon,
-  PersonStandingIcon,
   ScissorsIcon,
   SearchIcon,
   SearchXIcon,
@@ -42,11 +41,12 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import type { Category } from "@/lib/catalog/schema";
 import {
+  BROWSE_CATEGORY_ORDER,
   CATEGORY_LABELS,
   CATEGORY_ORDER,
   GENDER_LABELS,
   type ItemView,
-  isCategory,
+  isBrowseCategory,
 } from "@/lib/catalog/view";
 import { CopyButton } from "./copy-button";
 import { ItemImage } from "./item-image";
@@ -61,10 +61,9 @@ const GENDER_FILTER_LABELS: Record<GenderFilter, string> = {
 };
 
 const CATEGORY_ICONS: Record<
-  Category,
+  (typeof BROWSE_CATEGORY_ORDER)[number],
   ComponentType<{ className?: string }>
 > = {
-  body: PersonStandingIcon,
   hair: ScissorsIcon,
   pose: CircleUserRoundIcon,
 };
@@ -91,7 +90,7 @@ function readFilters(params: URLSearchParams): Filters {
   const category = params.get("c") ?? "";
   const gender = params.get("g");
   return {
-    category: isCategory(category) ? category : DEFAULT_FILTERS.category,
+    category: isBrowseCategory(category) ? category : DEFAULT_FILTERS.category,
     gender: isGenderFilter(gender) ? gender : DEFAULT_FILTERS.gender,
     query: params.get("q") ?? "",
     tags: params.get("t")?.split(",").filter(Boolean) ?? [],
@@ -187,7 +186,7 @@ function FilterPanel({
     (value: unknown[]) => {
       const [next] = value;
       // 再次点击当前类别会清空选择，这里忽略，保证总有一个类别
-      if (typeof next === "string" && isCategory(next)) {
+      if (typeof next === "string" && isBrowseCategory(next)) {
         onCategory(next);
       }
     },
@@ -219,7 +218,7 @@ function FilterPanel({
           spacing={1}
           value={[filters.category]}
         >
-          {CATEGORY_ORDER.map((value) => {
+          {BROWSE_CATEGORY_ORDER.map((value) => {
             const Icon = CATEGORY_ICONS[value];
             return (
               <ToggleGroupItem
@@ -713,7 +712,7 @@ export function CatalogBrowserFallback() {
       </div>
       <div className="md:grid md:grid-cols-[15rem_minmax(0,1fr)] lg:grid-cols-[16rem_minmax(0,1fr)]">
         <div className="hidden gap-2 border-r p-3 md:grid md:content-start">
-          {CATEGORY_ORDER.map((category) => (
+          {BROWSE_CATEGORY_ORDER.map((category) => (
             <Skeleton className="h-10 rounded-lg" key={category} />
           ))}
         </div>
