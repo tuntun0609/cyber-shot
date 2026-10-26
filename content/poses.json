@@ -262,5 +262,41 @@
     "imageAspectRatio": 0.75,
     "thumb": "/poses/p-022-white.thumb.webp",
     "thumbAspectRatio": 0.75
+  },
+  {
+    "id": "p-023",
+    "name": "屈膝并足坐姿近景",
+    "promptEn": "A seated lower-body close-up with the upper torso cut off by the top edge and the head outside the frame. Keep both knees bent close together, with the lower legs angled down toward feet placed near each other. Let one hand rest loosely on the upper thigh and the other hang beside the frame-left leg with relaxed fingers. Preserve the source crop, foot angles and leg overlap.",
+    "promptZh": "坐姿下半身近景，上身由画面上缘截断，头部不入镜；双膝弯曲靠近，小腿向下斜伸，双脚相邻。画面右侧手掌轻搭在大腿上，另一只手在画面左侧腿旁自然下垂、手指放松。保留原始裁切、脚部角度与腿部前后关系。",
+    "tags": ["坐姿", "近景", "屈膝"],
+    "gender": "any",
+    "image": "/poses/p-023-white.png",
+    "imageAspectRatio": 0.75,
+    "thumb": "/poses/p-023-white.thumb.webp",
+    "thumbAspectRatio": 0.75
+  },
+  {
+    "id": "p-024",
+    "name": "双手扶胯并足站姿",
+    "promptEn": "Stand upright with the weight balanced and the feet close together. Turn the head toward the right of the frame and lift the chin slightly. Bend both elbows outward, keeping the hands at the sides of the hips with the fingers mostly hidden behind the hip contours. Preserve the relaxed shoulder line, straight legs and original foot angles.",
+    "promptZh": "站姿，重心平稳，双脚靠近并拢；头部转向画面右侧，下巴略抬。双肘向外微弯，双手放在胯部两侧，手指大部分藏在胯部轮廓后。保留放松的肩线、伸直的双腿和原有脚部角度。",
+    "tags": ["站姿", "双手手势"],
+    "gender": "any",
+    "image": "/poses/p-024-white.png",
+    "imageAspectRatio": 0.75,
+    "thumb": "/poses/p-024-white.thumb.webp",
+    "thumbAspectRatio": 0.75
+  },
+  {
+    "id": "p-025",
+    "name": "侧倚屈膝伸臂姿",
+    "promptEn": "Recline sideways across the frame with the head at the right and the torso angled through the center. Lift both legs toward the upper left, bend the knees at different heights and let the thighs overlap. Extend one arm toward the lower-left edge with the palm open and visible fingers relaxed. Preserve the unusual sideways framing, foreshortening and limb overlap.",
+    "promptZh": "身体横向侧倚在画面中，头部位于右侧，躯干斜穿过画面中央；双腿朝左上方抬起，膝盖弯曲且高低不同，大腿前后交叠。一只手臂向左下画缘伸出，掌心张开、手指放松。保留横向姿态、透视缩短与肢体遮挡。",
+    "tags": ["侧倾", "屈膝", "交叠腿"],
+    "gender": "any",
+    "image": "/poses/p-025-white.png",
+    "imageAspectRatio": 0.75,
+    "thumb": "/poses/p-025-white.thumb.webp",
+    "thumbAspectRatio": 0.75
   }
 ]
