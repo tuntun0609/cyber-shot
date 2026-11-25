@@ -325,6 +325,7 @@ function ItemCard({ item, search }: { item: ItemView; search: CatalogSearch }) {
               alt=""
               aspectRatio={thumbAspectRatio}
               className="object-cover opacity-70 blur-2xl"
+              sizes="64px"
               src={item.thumbSrc}
             />
           </div>
@@ -341,6 +342,7 @@ function ItemCard({ item, search }: { item: ItemView; search: CatalogSearch }) {
                 alt={item.name}
                 aspectRatio={thumbAspectRatio}
                 className="object-cover"
+                sizes="(min-width: 1280px) 16vw, (min-width: 1024px) 20vw, (min-width: 768px) 28vw, (min-width: 640px) 33vw, 50vw"
                 src={item.thumbSrc}
               />
             </div>

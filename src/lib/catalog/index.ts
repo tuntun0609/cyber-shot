@@ -1,7 +1,6 @@
 import bodies from "../../../content/bodies.json";
 import hairstyles from "../../../content/hairstyles.json";
 import poses from "../../../content/poses.json";
-import { getPreviewPath } from "./preview";
 import type { CatalogItem, Category } from "./schema";
 import { bodySchema, hairSchema, poseSchema } from "./schema";
 import type { ItemView } from "./view";
@@ -62,7 +61,6 @@ export function toView(item: CatalogItem): ItemView {
     gender: item.gender,
     id: item.id,
     imageAspectRatio: item.imageAspectRatio,
-    imagePreviewSrc: getPreviewPath(item),
     imageSrc: imageUrl(item.image),
     name: item.name,
     promptEn: item.promptEn,

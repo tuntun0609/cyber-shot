@@ -7,7 +7,6 @@
 /.rsbuild/
 /.tanstack/
 /.wrangler/
-/public/catalog-previews/
 
 # Test output
 /coverage/

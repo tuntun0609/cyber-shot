@@ -58,7 +58,7 @@ function ImagePanel({ item }: { item: ItemView }) {
   const src =
     kind.value === "skeleton" && item.skeletonSrc
       ? item.skeletonSrc
-      : (item.imagePreviewSrc ?? item.imageSrc);
+      : item.imageSrc;
 
   return (
     <div className="grid content-start gap-3">
@@ -69,8 +69,9 @@ function ImagePanel({ item }: { item: ItemView }) {
         <ItemImage
           alt={kind.value === "skeleton" ? `${item.name}骨架图` : item.name}
           aspectRatio={aspectRatio}
-          className="object-contain"
+          fit="contain"
           priority
+          sizes="(min-width: 768px) 36rem, 94vw"
           src={src}
         />
       </div>
