@@ -7,5 +7,13 @@
   "assets": {
     "directory": "./dist/client",
     "html_handling": "drop-trailing-slash"
-  }
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "cyber-shot",
+      "database_id": "3678e548-e967-4f77-bfa9-b4a3a3b214ab",
+      "migrations_dir": "drizzle"
+    }
+  ]
 }
