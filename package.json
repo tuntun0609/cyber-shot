@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "build": "rsbuild build",
+    "cf-typegen": "wrangler types",
     "check": "ultracite check",
     "deploy": "bun run build && wrangler deploy",
     "dev": "rsbuild dev",
@@ -12,7 +13,7 @@
     "format": "biome format --write",
     "lint": "biome check",
     "prepare": "lefthook install",
-    "start": "wrangler dev --local",
+    "start": "cp .env .dev.vars && wrangler dev --local",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

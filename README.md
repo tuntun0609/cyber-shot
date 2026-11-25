@@ -27,7 +27,12 @@ bun run dev
 | ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
 | `IMAGE_BASE_URL` | 远程素材对象 key 对应的图片域名，如 R2 的 `r2.dev` 地址或自定义域名。该域名需在 Cloudflare 启用 Images Transformations；留空则从站点根路径读取 |
 
-`bun run dev` 可从 `.env` 读取该变量；`bun run start` 可使用 `.dev.vars`。生产环境在 Cloudflare Worker 中配置同名变量即可，无需重新构建应用。
+### 管理方式
+
+- 公开配置（如 `IMAGE_BASE_URL`）写入 `wrangler.jsonc` 的 `vars`，随代码提交；密钥不要写入该文件，用 `bun x wrangler secret put <NAME>` 设置。
+- 本地只维护 `.env`（参考 `.env.example`）：`bun run dev` 直接读取，`bun run start` 会先把 `.env` 复制为 `.dev.vars`。`R2_*` 仅供本地脚本使用，不会上传到 Worker。
+- 新增变量时：在 `src/lib/env.ts` 的 schema 中加一行，业务代码统一通过 `getEnv()` 读取；修改 `wrangler.jsonc` 后运行 `bun run cf-typegen` 更新 `worker-configuration.d.ts`。
+- 每个变量只选一个来源，避免同时在控制台和 `wrangler.jsonc` 中配置。
 
 ## 素材数据
 

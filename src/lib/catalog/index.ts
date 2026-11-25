@@ -1,6 +1,7 @@
 import bodies from "../../../content/bodies.json";
 import hairstyles from "../../../content/hairstyles.json";
 import poses from "../../../content/poses.json";
+import { getEnv } from "../env";
 import type { CatalogItem, Category } from "./schema";
 import { bodySchema, hairSchema, poseSchema } from "./schema";
 import type { ItemView } from "./view";
@@ -47,7 +48,7 @@ export function imageUrl(key: string): string {
   if (key.startsWith("/")) {
     return key;
   }
-  const base = process.env.IMAGE_BASE_URL;
+  const base = getEnv().IMAGE_BASE_URL;
   if (!base) {
     return `/${key}`;
   }

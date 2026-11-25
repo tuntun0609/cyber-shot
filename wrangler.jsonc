@@ -3,6 +3,10 @@
   "name": "cyber-shot",
   "main": "./worker.mjs",
   "compatibility_date": "2026-11-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "vars": {
+    "IMAGE_BASE_URL": "https://oss.tuntun.site"
+  },
   "keep_vars": true,
   "assets": {
     "directory": "./dist/client",
