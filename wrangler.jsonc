@@ -7,6 +7,12 @@
   "vars": {
     "IMAGE_BASE_URL": "https://oss.tuntun.site"
   },
+  "routes": [
+    {
+      "pattern": "cyber-shot.tuntun.site",
+      "custom_domain": true
+    }
+  ],
   "keep_vars": true,
   "assets": {
     "directory": "./dist/client",
