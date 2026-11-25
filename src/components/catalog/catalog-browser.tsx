@@ -1,5 +1,9 @@
-"use client";
-
+import {
+  Link,
+  linkOptions,
+  useNavigate,
+  useSearch,
+} from "@tanstack/react-router";
 import {
   CircleUserRoundIcon,
   ScissorsIcon,
@@ -8,16 +12,8 @@ import {
   SlidersHorizontalIcon,
   XIcon,
 } from "lucide-react";
-import Link from "next/link";
-import { useSearchParams } from "next/navigation";
-import {
-  type ChangeEvent,
-  type ComponentType,
-  type KeyboardEvent,
-  useCallback,
-  useMemo,
-  useState,
-} from "react";
+import type { ChangeEvent, ComponentType, KeyboardEvent } from "react";
+import { useCallback, useMemo } from "react";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -40,20 +36,29 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import type { Category } from "@/lib/catalog/schema";
+import type {
+  CatalogSearch,
+  Filters,
+  GenderFilter,
+} from "@/lib/catalog/search";
+import {
+  DEFAULT_FILTERS,
+  GENDER_FILTERS,
+  isGenderFilter,
+  readFilters,
+  writeFilters,
+} from "@/lib/catalog/search";
+import type { ItemView } from "@/lib/catalog/view";
 import {
   BROWSE_CATEGORY_ORDER,
   CATEGORY_LABELS,
   CATEGORY_ORDER,
   GENDER_LABELS,
-  type ItemView,
   isBrowseCategory,
 } from "@/lib/catalog/view";
 import { CopyButton } from "./copy-button";
 import { ItemImage } from "./item-image";
 
-type GenderFilter = "all" | "female" | "male";
-
-const GENDER_FILTERS: readonly GenderFilter[] = ["all", "female", "male"];
 const GENDER_FILTER_LABELS: Record<GenderFilter, string> = {
   all: "全部",
   female: "女（含不限）",
@@ -67,54 +72,6 @@ const CATEGORY_ICONS: Record<
   hair: ScissorsIcon,
   pose: CircleUserRoundIcon,
 };
-
-interface Filters {
-  category: Category;
-  gender: GenderFilter;
-  query: string;
-  tags: string[];
-}
-
-const DEFAULT_FILTERS: Filters = {
-  category: "hair",
-  gender: "all",
-  query: "",
-  tags: [],
-};
-
-function isGenderFilter(value: string | null): value is GenderFilter {
-  return (GENDER_FILTERS as readonly (string | null)[]).includes(value);
-}
-
-function readFilters(params: URLSearchParams): Filters {
-  const category = params.get("c") ?? "";
-  const gender = params.get("g");
-  return {
-    category: isBrowseCategory(category) ? category : DEFAULT_FILTERS.category,
-    gender: isGenderFilter(gender) ? gender : DEFAULT_FILTERS.gender,
-    query: params.get("q") ?? "",
-    tags: params.get("t")?.split(",").filter(Boolean) ?? [],
-  };
-}
-
-// 只改地址栏不触发导航，返回或分享时能还原筛选
-function writeFilters(filters: Filters) {
-  const params = new URLSearchParams();
-  if (filters.category !== DEFAULT_FILTERS.category) {
-    params.set("c", filters.category);
-  }
-  if (filters.gender !== "all") {
-    params.set("g", filters.gender);
-  }
-  if (filters.tags.length > 0) {
-    params.set("t", filters.tags.join(","));
-  }
-  if (filters.query) {
-    params.set("q", filters.query);
-  }
-  const search = params.toString();
-  window.history.replaceState(null, "", search ? `/?${search}` : "/");
-}
 
 function matchesGender(item: ItemView, gender: GenderFilter) {
   return gender === "all" || item.gender === "any" || item.gender === gender;
@@ -159,12 +116,12 @@ function TagOption({
     [onTag, value]
   );
   return (
-    <div className="flex min-h-9 items-center gap-3 rounded-lg px-2 can-hover:hover:bg-muted">
+    <div className="can-hover:hover:bg-muted flex min-h-9 items-center gap-3 rounded-lg px-2">
       <Checkbox checked={checked} id={id} onCheckedChange={handleChange} />
       <Label className="flex-1 cursor-pointer py-2 font-normal" htmlFor={id}>
         {value}
       </Label>
-      <span className="font-mono text-muted-foreground text-xs tabular-nums">
+      <span className="text-muted-foreground font-mono text-xs tabular-nums">
         {count}
       </span>
     </div>
@@ -205,7 +162,7 @@ function FilterPanel({
     <div className="grid gap-6">
       <section aria-labelledby={`${idPrefix}-category`} className="grid gap-2">
         <h2
-          className="px-2 font-medium text-muted-foreground text-xs tracking-wide"
+          className="text-muted-foreground px-2 text-xs font-medium tracking-wide"
           id={`${idPrefix}-category`}
         >
           类别
@@ -222,15 +179,15 @@ function FilterPanel({
             const Icon = CATEGORY_ICONS[value];
             return (
               <ToggleGroupItem
-                className="h-10 justify-between rounded-lg px-2 aria-pressed:bg-accent aria-pressed:text-accent-foreground"
+                className="aria-pressed:bg-accent aria-pressed:text-accent-foreground h-10 justify-between rounded-lg px-2"
                 key={value}
                 value={value}
               >
                 <span className="flex items-center gap-2.5">
-                  <Icon className="size-4 text-muted-foreground" />
+                  <Icon className="text-muted-foreground size-4" />
                   {CATEGORY_LABELS[value]}
                 </span>
-                <span className="font-mono text-muted-foreground text-xs tabular-nums">
+                <span className="text-muted-foreground font-mono text-xs tabular-nums">
                   {counts[value]}
                 </span>
               </ToggleGroupItem>
@@ -243,7 +200,7 @@ function FilterPanel({
 
       <section aria-labelledby={`${idPrefix}-gender`} className="grid gap-2">
         <h2
-          className="px-2 font-medium text-muted-foreground text-xs tracking-wide"
+          className="text-muted-foreground px-2 text-xs font-medium tracking-wide"
           id={`${idPrefix}-gender`}
         >
           性别
@@ -256,7 +213,7 @@ function FilterPanel({
         >
           {GENDER_FILTERS.map((value) => (
             <div
-              className="flex min-h-9 items-center gap-3 rounded-lg px-2 can-hover:hover:bg-muted"
+              className="can-hover:hover:bg-muted flex min-h-9 items-center gap-3 rounded-lg px-2"
               key={value}
             >
               <RadioGroupItem id={`${idPrefix}-g-${value}`} value={value} />
@@ -276,7 +233,7 @@ function FilterPanel({
           <Separator />
           <section aria-labelledby={`${idPrefix}-tags`} className="grid gap-2">
             <h2
-              className="px-2 font-medium text-muted-foreground text-xs tracking-wide"
+              className="text-muted-foreground px-2 text-xs font-medium tracking-wide"
               id={`${idPrefix}-tags`}
             >
               标签
@@ -337,20 +294,25 @@ function TagFilter({
   return <ActiveFilter label={value} onRemove={handleRemove} />;
 }
 
-function ItemCard({ item }: { item: ItemView }) {
-  const href = `/${item.category}/${item.id}`;
+function ItemCard({ item, search }: { item: ItemView; search: CatalogSearch }) {
+  const params = { category: item.category, id: item.id };
+  const detailLink = linkOptions({
+    mask: { params, search: {}, to: "/$category/$id", unmaskOnReload: true },
+    params,
+    resetScroll: false,
+    search,
+    to: "/catalog-modal/$category/$id",
+  });
   const previewAspectRatio =
     item.category === "pose" ? (item.thumbAspectRatio ?? 3 / 4) : 4 / 5;
   const thumbAspectRatio = item.thumbAspectRatio ?? previewAspectRatio;
-  const imageSizes =
-    "(min-width: 1280px) 20vw, (min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw";
   return (
     <li className="min-w-0">
-      <Card className="group relative h-full gap-0 py-0 transition-shadow duration-200 can-hover:hover:ring-foreground/20">
+      <Card className="group can-hover:hover:ring-foreground/20 relative h-full gap-0 py-0 transition-shadow duration-200">
         <Link
-          className="relative block shrink-0 overflow-hidden bg-muted"
-          href={href}
+          className="bg-muted relative block shrink-0 overflow-hidden"
           style={{ aspectRatio: previewAspectRatio }}
+          {...detailLink}
         >
           <div
             aria-hidden="true"
@@ -361,10 +323,9 @@ function ItemCard({ item }: { item: ItemView }) {
           >
             <ItemImage
               alt=""
+              aspectRatio={thumbAspectRatio}
               className="object-cover opacity-70 blur-2xl"
-              sizes={imageSizes}
               src={item.thumbSrc}
-              unoptimized={item.thumbSrc.endsWith(".webp")}
             />
           </div>
           {/* 有效画面完整居中显示，同图模糊铺底填满剩余空间。 */}
@@ -378,16 +339,15 @@ function ItemCard({ item }: { item: ItemView }) {
             >
               <ItemImage
                 alt={item.name}
+                aspectRatio={thumbAspectRatio}
                 className="object-cover"
-                sizes={imageSizes}
                 src={item.thumbSrc}
-                unoptimized={item.thumbSrc.endsWith(".webp")}
               />
             </div>
           </div>
         </Link>
         <CopyButton
-          className="absolute top-2 right-2 can-hover:opacity-0 shadow-sm transition-opacity duration-200 focus-visible:opacity-100 can-hover:group-hover:opacity-100 can-hover:data-copied:opacity-100"
+          className="can-hover:opacity-0 can-hover:group-hover:opacity-100 can-hover:data-copied:opacity-100 absolute top-2 right-2 shadow-sm transition-opacity duration-200 focus-visible:opacity-100"
           label="复制"
           size="sm"
           text={item.promptZh}
@@ -395,8 +355,8 @@ function ItemCard({ item }: { item: ItemView }) {
         />
         <div className="flex flex-1 flex-col gap-2 p-3">
           <Link
-            className="min-w-0 truncate font-medium text-sm transition-colors can-hover:hover:text-primary"
-            href={href}
+            className="can-hover:hover:text-primary min-w-0 truncate text-sm font-medium transition-colors"
+            {...detailLink}
           >
             {item.name}
           </Link>
@@ -408,7 +368,7 @@ function ItemCard({ item }: { item: ItemView }) {
             ))}
             <Badge variant="outline">{GENDER_LABELS[item.gender]}</Badge>
           </div>
-          <span className="mt-auto font-mono text-muted-foreground text-xs">
+          <span className="text-muted-foreground mt-auto font-mono text-xs">
             {item.id.toUpperCase()}
           </span>
         </div>
@@ -418,21 +378,21 @@ function ItemCard({ item }: { item: ItemView }) {
 }
 
 export function CatalogBrowser({ items }: { items: ItemView[] }) {
-  const searchParams = useSearchParams();
-  // 只在首次挂载时读地址栏，之后以组件状态为准，详情弹窗打开时筛选不会被清空
-  const [filters, setFilters] = useState(() =>
-    readFilters(new URLSearchParams(searchParams.toString()))
-  );
+  const search = useSearch({ from: "/_catalog" });
+  const navigate = useNavigate();
+  const filters = readFilters(search);
   const { category, gender, query, tags } = filters;
 
   const update = useCallback(
     (patch: (prev: Filters) => Filters) => {
-      const next = patch(filters);
-      setFilters(next);
-      // History API 会更新 Next.js Router，必须在事件处理中调用，不能放进状态更新函数。
-      writeFilters(next);
+      navigate({
+        replace: true,
+        resetScroll: false,
+        search: (previous) => writeFilters(patch(readFilters(previous))),
+        to: "/",
+      });
     },
-    [filters]
+    [navigate]
   );
 
   const live = useMemo(() => items.filter((item) => !item.deprecated), [items]);
@@ -539,10 +499,10 @@ export function CatalogBrowser({ items }: { items: ItemView[] }) {
 
   return (
     <>
-      <header className="sticky top-0 z-30 border-b bg-background/85 backdrop-blur-md">
+      <header className="bg-background/85 sticky top-0 z-30 border-b backdrop-blur-md">
         <div className="flex h-16 items-center gap-3 px-4 md:gap-4 md:px-6">
-          <Link className="flex shrink-0 items-center gap-2" href="/">
-            <span className="grid size-7 place-items-center rounded-lg bg-foreground font-mono font-semibold text-background text-xs">
+          <Link className="flex shrink-0 items-center gap-2" to="/">
+            <span className="bg-foreground text-background grid size-7 place-items-center rounded-lg font-mono text-xs font-semibold">
               cs
             </span>
             <span className="hidden font-mono font-semibold tracking-tight sm:inline">
@@ -551,7 +511,7 @@ export function CatalogBrowser({ items }: { items: ItemView[] }) {
           </Link>
 
           <div className="relative min-w-0 flex-1 md:max-w-md">
-            <SearchIcon className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
+            <SearchIcon className="text-muted-foreground pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2" />
             <Input
               aria-label="搜索素材"
               className="h-10 pr-10 pl-9"
@@ -616,7 +576,7 @@ export function CatalogBrowser({ items }: { items: ItemView[] }) {
       <div className="md:grid md:grid-cols-[15rem_minmax(0,1fr)] lg:grid-cols-[16rem_minmax(0,1fr)]">
         <aside
           aria-label="筛选"
-          className="sticky top-16 hidden h-[calc(100svh-4rem)] border-r bg-sidebar text-sidebar-foreground md:block"
+          className="bg-sidebar text-sidebar-foreground sticky top-16 hidden h-[calc(100svh-4rem)] border-r md:block"
         >
           <ScrollArea className="h-full">
             <div className="p-3 pb-8">
@@ -627,12 +587,12 @@ export function CatalogBrowser({ items }: { items: ItemView[] }) {
 
         <main className="grid content-start gap-4 px-4 py-5 md:px-6">
           <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-            <h1 className="font-semibold text-2xl tracking-tight">
+            <h1 className="text-2xl font-semibold tracking-tight">
               {CATEGORY_LABELS[category]}
             </h1>
             <p aria-live="polite" className="text-muted-foreground text-sm">
               共{" "}
-              <span className="font-mono text-foreground tabular-nums">
+              <span className="text-foreground font-mono tabular-nums">
                 {visible.length}
               </span>{" "}
               项
@@ -678,14 +638,14 @@ export function CatalogBrowser({ items }: { items: ItemView[] }) {
           {visible.length > 0 ? (
             <ul className="grid auto-rows-fr grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
               {visible.map((item) => (
-                <ItemCard item={item} key={item.id} />
+                <ItemCard item={item} key={item.id} search={search} />
               ))}
             </ul>
           ) : (
             <div className="grid place-items-center gap-3 rounded-2xl border border-dashed px-6 py-20 text-center">
-              <SearchXIcon className="size-8 text-muted-foreground" />
+              <SearchXIcon className="text-muted-foreground size-8" />
               <p className="font-medium">没有符合条件的素材</p>
-              <p className="max-w-sm text-muted-foreground text-sm">
+              <p className="text-muted-foreground max-w-sm text-sm">
                 {hasFilters
                   ? "当前的搜索词、性别或标签组合太窄了，放宽条件试试。"
                   : "这个类别暂时还没有素材。"}

@@ -1,5 +1,4 @@
-"use client";
-
+import { Link } from "@tanstack/react-router";
 import { DownloadIcon, TriangleAlertIcon } from "lucide-react";
 import { useCallback, useState } from "react";
 import { Badge } from "@/components/ui/badge";
@@ -13,11 +12,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import {
-  CATEGORY_LABELS,
-  GENDER_LABELS,
-  type ItemView,
-} from "@/lib/catalog/view";
+import type { ItemView } from "@/lib/catalog/view";
+import { CATEGORY_LABELS, GENDER_LABELS } from "@/lib/catalog/view";
 import { cn } from "@/lib/utils";
 import { CopyButton } from "./copy-button";
 import { ItemImage } from "./item-image";
@@ -58,22 +54,23 @@ function DownloadLink({ href, label }: { href: string; label: string }) {
 
 function ImagePanel({ item }: { item: ItemView }) {
   const kind = useSegment<ImageKind>("photo");
+  const aspectRatio = item.imageAspectRatio ?? 4 / 5;
   const src =
     kind.value === "skeleton" && item.skeletonSrc
       ? item.skeletonSrc
-      : item.imageSrc;
+      : (item.imagePreviewSrc ?? item.imageSrc);
 
   return (
     <div className="grid content-start gap-3">
       <div
-        className="relative overflow-hidden rounded-2xl bg-muted"
-        style={{ aspectRatio: item.imageAspectRatio ?? 4 / 5 }}
+        className="bg-muted relative overflow-hidden rounded-2xl"
+        style={{ aspectRatio }}
       >
         <ItemImage
           alt={kind.value === "skeleton" ? `${item.name}骨架图` : item.name}
+          aspectRatio={aspectRatio}
           className="object-contain"
           priority
-          sizes="(min-width: 768px) 45vw, 100vw"
           src={src}
         />
       </div>
@@ -161,7 +158,7 @@ export function ItemDetail({ item }: { item: ItemView }) {
       <div className="grid content-start gap-5">
         {item.deprecated ? (
           <div
-            className="flex items-start gap-3 rounded-2xl bg-destructive/10 px-4 py-3 text-destructive text-sm"
+            className="bg-destructive/10 text-destructive flex items-start gap-3 rounded-2xl px-4 py-3 text-sm"
             role="status"
           >
             <TriangleAlertIcon className="mt-0.5 size-4 shrink-0" />
@@ -170,10 +167,10 @@ export function ItemDetail({ item }: { item: ItemView }) {
         ) : null}
 
         <div className="grid gap-1.5">
-          <p className="font-mono text-muted-foreground text-xs tracking-wide">
+          <p className="text-muted-foreground font-mono text-xs tracking-wide">
             {CATEGORY_LABELS[item.category]} / {item.id.toUpperCase()}
           </p>
-          <h1 className="text-balance font-semibold text-3xl tracking-tight">
+          <h1 className="text-3xl font-semibold tracking-tight text-balance">
             {item.name}
           </h1>
           <p className="text-muted-foreground text-sm">
@@ -185,14 +182,9 @@ export function ItemDetail({ item }: { item: ItemView }) {
           <ul aria-label="标签" className="flex flex-wrap gap-2">
             {item.tags.map((tag) => (
               <li key={tag}>
-                {/* 整页跳转，避免弹窗路由在软导航时保持打开 */}
                 <Badge
                   className="h-8 px-3 text-sm"
-                  render={
-                    <a
-                      href={`/?${new URLSearchParams({ c: item.category, t: tag })}`}
-                    />
-                  }
+                  render={<Link search={{ c: item.category, t: tag }} to="/" />}
                   variant="outline"
                 >
                   {tag}

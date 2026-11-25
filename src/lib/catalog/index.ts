@@ -1,16 +1,13 @@
 import bodies from "../../../content/bodies.json";
 import hairstyles from "../../../content/hairstyles.json";
 import poses from "../../../content/poses.json";
-import {
-  bodySchema,
-  type CatalogItem,
-  type Category,
-  hairSchema,
-  poseSchema,
-} from "./schema";
-import { CATEGORY_ORDER, type ItemView } from "./view";
+import { getPreviewPath } from "./preview";
+import type { CatalogItem, Category } from "./schema";
+import { bodySchema, hairSchema, poseSchema } from "./schema";
+import type { ItemView } from "./view";
+import { CATEGORY_ORDER } from "./view";
 
-const TRAILING_SLASH = /\/$/;
+const TRAILING_SLASH = /\/$/u;
 
 function withCategory(category: Category, items: object[]): CatalogItem[] {
   return items.map((item) => ({ ...item, category }) as CatalogItem);
@@ -51,7 +48,7 @@ export function imageUrl(key: string): string {
   if (key.startsWith("/")) {
     return key;
   }
-  const base = process.env.NEXT_PUBLIC_IMAGE_BASE_URL;
+  const base = process.env.IMAGE_BASE_URL;
   if (!base) {
     return `/${key}`;
   }
@@ -65,6 +62,7 @@ export function toView(item: CatalogItem): ItemView {
     gender: item.gender,
     id: item.id,
     imageAspectRatio: item.imageAspectRatio,
+    imagePreviewSrc: getPreviewPath(item),
     imageSrc: imageUrl(item.image),
     name: item.name,
     promptEn: item.promptEn,

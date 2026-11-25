@@ -4,7 +4,8 @@ import type { VariantProps } from "class-variance-authority";
 import { CheckIcon, CopyIcon } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import { Button, type buttonVariants } from "@/components/ui/button";
+import type { buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 
 export function useCopy() {
   const [copied, setCopied] = useState(false);

@@ -27,7 +27,7 @@ const baseItem = z.object({
 });
 
 function itemSchema(category: Category) {
-  const pattern = new RegExp(`^${ID_PREFIX[category]}-\\d{3}$`);
+  const pattern = new RegExp(`^${ID_PREFIX[category]}-\\d{3}$`, "u");
   const id = z
     .string()
     .regex(pattern, `id 必须形如 ${ID_PREFIX[category]}-001`);

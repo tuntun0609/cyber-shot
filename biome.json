@@ -2,7 +2,7 @@
   "extends": [
     "ultracite/biome/core",
     "ultracite/biome/react",
-    "ultracite/biome/next"
+    "ultracite/biome/tanstack"
   ],
   "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
   "vcs": {
@@ -12,7 +12,14 @@
   },
   "files": {
     "ignoreUnknown": true,
-    "includes": ["!node_modules", "!.next", "!dist", "!build", "!public"]
+    "includes": [
+      "!node_modules",
+      "!.wrangler",
+      "!dist",
+      "!build",
+      "!public",
+      "!!src/routeTree.gen.ts"
+    ]
   },
   "formatter": {
     "enabled": true,
@@ -27,10 +34,15 @@
   "linter": {
     "enabled": true,
     "rules": {
-      "preset": "recommended"
+      "preset": "recommended",
+      "suspicious": {
+        "useBaseline": {
+          "level": "error",
+          "options": { "allowSelectors": ["selection"] }
+        }
+      }
     },
     "domains": {
-      "next": "recommended",
       "react": "recommended"
     }
   },

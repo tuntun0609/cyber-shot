@@ -26,6 +26,7 @@ export interface ItemView {
   gender: "female" | "male" | "any";
   id: string;
   imageAspectRatio?: number;
+  imagePreviewSrc?: string;
   imageSrc: string;
   name: string;
   promptEn: string;

@@ -1,30 +1,28 @@
-import Image from "next/image";
+import { cn } from "@/lib/utils";
 
 export function ItemImage({
   alt,
+  aspectRatio,
   className,
   priority,
-  sizes,
   src,
-  unoptimized = false,
 }: {
   alt: string;
+  aspectRatio: number;
   className?: string;
   priority?: boolean;
-  sizes: string;
   src: string;
-  unoptimized?: boolean;
 }) {
   return (
-    <Image
+    <img
       alt={alt}
-      className={className}
-      fill
-      priority={priority}
-      sizes={sizes}
+      className={cn("absolute inset-0 size-full", className)}
+      decoding="async"
+      fetchPriority={priority ? "high" : undefined}
+      height={1000}
+      loading={priority ? "eager" : "lazy"}
       src={src}
-      // SVG 和预压缩缩略图无需再次优化。
-      unoptimized={unoptimized || src.endsWith(".svg")}
+      width={Math.round(aspectRatio * 1000)}
     />
   );
 }

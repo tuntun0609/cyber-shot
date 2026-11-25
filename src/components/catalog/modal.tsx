@@ -1,7 +1,6 @@
-"use client";
-
-import { useRouter } from "next/navigation";
-import { type ReactNode, useCallback } from "react";
+import { useRouter } from "@tanstack/react-router";
+import type { ReactNode } from "react";
+import { useCallback } from "react";
 import {
   Dialog,
   DialogContent,
@@ -22,7 +21,7 @@ export function Modal({
   const handleOpenChange = useCallback(
     (open: boolean) => {
       if (!open) {
-        router.back();
+        router.history.back();
       }
     },
     [router]

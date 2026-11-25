@@ -1,11 +1,13 @@
 # Dependencies
 /node_modules
 
-# Next.js and build output
-/.next/
-/out/
+# Build output and framework caches
 /build/
 /dist/
+/.rsbuild/
+/.tanstack/
+/.wrangler/
+/public/catalog-previews/
 
 # Test output
 /coverage/
@@ -15,7 +17,7 @@
 *.pem
 .env*
 !.env.example
-.vercel
+.dev.vars*
 
 # Debug logs
 npm-debug.log*
@@ -25,4 +27,3 @@ yarn-error.log*
 
 # Generated TypeScript files
 *.tsbuildinfo
-next-env.d.ts

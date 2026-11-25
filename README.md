@@ -2,11 +2,11 @@
 
 人物写真素材库。提供发型、身材、动作三类素材，每条素材带预览图和中英文提示词，供用户浏览、复制提示词、下载参考图。本站不生成图片，也不提供登录、收费和搭配功能。
 
-基于 Next.js App Router、React、TypeScript、Tailwind CSS v4 和 shadcn 配置。
+基于 TanStack Start、Rsbuild、React、TypeScript、Tailwind CSS v4 和 shadcn。由 Cloudflare Workers 在请求时渲染页面并运行服务端函数，图片和前端资源由 Workers Static Assets 提供。
 
 ## 开发
 
-使用 Bun 1.4.0 和 Node.js 20.9+。
+使用 Bun 1.4.0 和 Node.js 22.12+。
 
 ```bash
 bun install
@@ -23,11 +23,13 @@ bun run dev
 
 ## 环境变量
 
-| 变量 | 说明 |
-| --- | --- |
-| `NEXT_PUBLIC_IMAGE_BASE_URL` | 远程素材对象 key 对应的图片域名，如 R2 的 `r2.dev` 地址或自定义域名。留空则从 `public/` 读取；以 `/` 开头的本地素材路径始终从 `public/` 读取 |
+| 变量             | 说明                                                                                                                                         |
+| ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `IMAGE_BASE_URL` | 远程素材对象 key 对应的图片域名，如 R2 的 `r2.dev` 地址或自定义域名。留空则从 `public/` 读取；以 `/` 开头的本地素材路径始终从 `public/` 读取 |
 
-`next.config.ts` 会根据该变量生成 `images.remotePatterns`，切换域名不用改代码。
+`bun run dev` 可从 `.env` 读取该变量；`bun run start` 可使用 `.dev.vars`。生产环境在 Cloudflare Worker 中配置同名变量即可，无需重新构建应用。
+
+开发启动和生产构建会在 `public/catalog-previews/` 生成本地详情图的 WebP 预览，不改动原图；列表使用现有缩略图，远程素材和 SVG 不做本地转换。下载链接仍指向原始文件。
 
 ## 素材数据
 
@@ -43,18 +45,18 @@ bun run dev
 
 每条素材的字段：
 
-| 字段 | 说明 |
-| --- | --- |
-| `id` | 类别前缀加三位数字 |
-| `name` | 中文名称 |
-| `promptEn` / `promptZh` | 中英文提示词 |
-| `tags` | 标签，用于首页筛选 |
-| `gender` | `female`、`male` 或 `any` |
-| `image` / `thumb` | 本地路径，如 `/hairstyles/h-001.png`，或远程对象 key，如 `hairstyles/h-001.webp` |
-| `imageAspectRatio` | 可选，原图宽高比，如三视图为 `1.5`；不填则按 `4 / 5` 展示 |
-| `thumbAspectRatio` | 可选，缩略图有效画面的宽高比；列表据此裁掉原有侧边填充，将完整有效画面居中放入统一的 `4 / 5` 预览框，剩余空间用同图模糊背景铺满；不填则按 `4 / 5` 展示 |
-| `skeleton` | 仅动作类，可选 |
-| `deprecated` | 可选，下架时设为 `true` |
+| 字段                    | 说明                                                                                                                                                   |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `id`                    | 类别前缀加三位数字                                                                                                                                     |
+| `name`                  | 中文名称                                                                                                                                               |
+| `promptEn` / `promptZh` | 中英文提示词                                                                                                                                           |
+| `tags`                  | 标签，用于首页筛选                                                                                                                                     |
+| `gender`                | `female`、`male` 或 `any`                                                                                                                              |
+| `image` / `thumb`       | 本地路径，如 `/hairstyles/h-001.png`，或远程对象 key，如 `hairstyles/h-001.webp`                                                                       |
+| `imageAspectRatio`      | 可选，原图宽高比，如三视图为 `1.5`；不填则按 `4 / 5` 展示                                                                                              |
+| `thumbAspectRatio`      | 可选，缩略图有效画面的宽高比；列表据此裁掉原有侧边填充，将完整有效画面居中放入统一的 `4 / 5` 预览框，剩余空间用同图模糊背景铺满；不填则按 `4 / 5` 展示 |
+| `skeleton`              | 仅动作类，可选                                                                                                                                         |
+| `deprecated`            | 可选，下架时设为 `true`                                                                                                                                |
 
 数据在 `src/lib/catalog/schema.ts` 中用 zod 校验。格式错误或 id 重复会让构建直接报错。
 
@@ -62,9 +64,9 @@ bun run dev
 
 ## 路由
 
-- `/`：首页，分类 Tab、标签筛选、素材网格。
-- `/[category]/[id]`：素材独立页，构建时静态生成。
-- `@modal/(.)[category]/[id]`：首页点击素材时的弹窗，与独立页共用同一个地址。
+- `/`：入口是 `_catalog/index.tsx`，与弹窗共享 `_catalog/route.tsx` 提供的无路径布局。
+- `/$category/$id`：由 `$category/$id.tsx` 定义，Worker 在请求时渲染详情；不存在的素材返回 404。
+- 首页点击素材时，TanStack Router 通过路由掩码显示弹窗，地址栏仍使用独立详情页的地址。直接访问或刷新时打开独立页，关闭弹窗或后退会恢复列表筛选。
 
 ## 内容规范
 
@@ -79,15 +81,22 @@ bun run dev
 ```bash
 bun run check      # Ultracite / Biome 检查
 bun run fix        # 自动修复格式和检查问题
-bun run typecheck  # 生成路由类型并检查 TypeScript
+bun run typecheck  # TypeScript 检查
 bun run build     # 生产构建
-bun run start     # 启动生产服务
+bun run start     # 在 Wrangler 中运行已构建的 Worker
+bun run deploy    # 构建并发布到 Cloudflare Workers
 ```
 
 `bun install` 会通过 Lefthook 安装提交前检查。VS Code 默认使用 Biome 扩展格式化。
 
-UI 基于 shadcn（`base-rhea` 风格、`neutral` 基础色、lucide 图标），组件在 `src/components/ui/`。主题由 `next-themes` 管理，支持浅色、深色和跟随系统，颜色变量在 `src/app/globals.css` 的 `:root` 与 `.dark` 中。新增组件：
+UI 基于 shadcn（`base-rhea` 风格、`neutral` 基础色、lucide 图标），组件在 `src/components/ui/`。主题由 `next-themes` 管理，支持浅色、深色和跟随系统，颜色变量在 `src/styles/globals.css` 的 `:root` 与 `.dark` 中。新增组件：
 
 ```bash
 bun x shadcn add button
 ```
+
+## 部署到 Cloudflare
+
+运行 `bun run build` 生成 `dist/client`（静态资源）和 `dist/server`（SSR）。`wrangler.jsonc` 将未匹配静态资源的请求交给 `worker.mjs`，再由 TanStack Start 处理页面、服务端函数和服务端路由。首次发布前用 `bun x wrangler login` 登录，确认 Worker 名称后运行 `bun run deploy`。
+
+本地用 `bun run start` 验证 Worker；只检查发布打包、不上传时，可在构建后执行 `bun x wrangler deploy --dry-run`。
