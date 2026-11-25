@@ -27,3 +27,6 @@ yarn-error.log*
 # Generated TypeScript files
 *.tsbuildinfo
 /worker-configuration.d.ts
+
+# AI generated outputs
+/outputs/
