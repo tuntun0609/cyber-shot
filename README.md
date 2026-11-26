@@ -13,7 +13,7 @@ bun install
 bun run dev
 ```
 
-打开 http://localhost:3000，首页默认展示发型。素材图片存放在远程对象存储，通过 `IMAGE_BASE_URL` 读取，并由 Cloudflare Images Transformations 按尺寸和格式自动优化。
+打开 http://localhost:3000，首页是导航落地页，发型库在 `/hair`，姿势库在 `/pose`。素材图片存放在远程对象存储，通过 `IMAGE_BASE_URL` 读取，并由 Cloudflare Images Transformations 按尺寸和格式自动优化。
 
 当前收录 33 款发型，涵盖女生超短发、短发、中性中长狼尾、齐肩／锁骨发、长直发、卷发和男生超短发、碎发：使用无五官浅灰模特和写实发丝，原图包含正面、侧面、背面三视图，列表使用正面缩略图。身材暂未收录素材，展示空状态，不使用示例记录。
 
@@ -67,9 +67,10 @@ bun run dev
 
 ## 路由
 
-- `/`：入口是 `_catalog/index.tsx`，与弹窗共享 `_catalog/route.tsx` 提供的无路径布局。
+- `/`：落地页，由 `index.tsx` 定义，`loadHome` 只取各类别条目数、精选条目和常用标签；精选 id 写在 `src/lib/catalog/home.functions.ts`。
+- `/hair`、`/pose`：发型库和姿势库，由 `_catalog/hair.tsx`、`_catalog/pose.tsx` 定义，与弹窗共享 `_catalog/route.tsx` 提供的无路径布局。筛选条件保存在 `g`（性别）、`q`（搜索）、`t`（标签）参数中，姿势页不显示性别筛选。
 - `/$category/$id`：由 `$category/$id.tsx` 定义，Worker 在请求时渲染详情；不存在的素材返回 404。
-- 首页点击素材时，TanStack Router 通过路由掩码显示弹窗，地址栏仍使用独立详情页的地址。直接访问或刷新时打开独立页，关闭弹窗或后退会恢复列表筛选。
+- 在 `/hair`、`/pose` 点击素材时，TanStack Router 通过路由掩码显示弹窗，地址栏仍使用独立详情页的地址。直接访问或刷新时打开独立页，关闭弹窗或后退会恢复列表筛选。
 
 ## 内容规范
 

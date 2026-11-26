@@ -9,11 +9,18 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as IndexRouteImport } from './routes/index'
 import { Route as CatalogRouteRouteImport } from './routes/_catalog/route'
 import { Route as CategoryIdRouteImport } from './routes/$category/$id'
-import { Route as CatalogIndexRouteImport } from './routes/_catalog/index'
+import { Route as CatalogHairRouteImport } from './routes/_catalog/hair'
+import { Route as CatalogPoseRouteImport } from './routes/_catalog/pose'
 import { Route as CatalogCatalogModalCategoryIdRouteImport } from './routes/_catalog/catalog-modal/$category/$id'
 
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CatalogRouteRoute = CatalogRouteRouteImport.update({
   id: '/_catalog',
   getParentRoute: () => rootRouteImport,
@@ -23,9 +30,14 @@ const CategoryIdRoute = CategoryIdRouteImport.update({
   path: '/$category/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CatalogIndexRoute = CatalogIndexRouteImport.update({
-  id: '/',
-  path: '/',
+const CatalogHairRoute = CatalogHairRouteImport.update({
+  id: '/hair',
+  path: '/hair',
+  getParentRoute: () => CatalogRouteRoute,
+} as any)
+const CatalogPoseRoute = CatalogPoseRouteImport.update({
+  id: '/pose',
+  path: '/pose',
   getParentRoute: () => CatalogRouteRoute,
 } as any)
 const CatalogCatalogModalCategoryIdRoute =
@@ -36,42 +48,60 @@ const CatalogCatalogModalCategoryIdRoute =
   } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof CatalogIndexRoute
+  '/': typeof IndexRoute
   '/$category/$id': typeof CategoryIdRoute
+  '/hair': typeof CatalogHairRoute
+  '/pose': typeof CatalogPoseRoute
   '/catalog-modal/$category/$id': typeof CatalogCatalogModalCategoryIdRoute
 }
 export interface FileRoutesByTo {
+  '/': typeof IndexRoute
   '/$category/$id': typeof CategoryIdRoute
-  '/': typeof CatalogIndexRoute
+  '/hair': typeof CatalogHairRoute
+  '/pose': typeof CatalogPoseRoute
   '/catalog-modal/$category/$id': typeof CatalogCatalogModalCategoryIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
+  '/': typeof IndexRoute
   '/_catalog': typeof CatalogRouteRouteWithChildren
   '/$category/$id': typeof CategoryIdRoute
-  '/_catalog/': typeof CatalogIndexRoute
+  '/_catalog/hair': typeof CatalogHairRoute
+  '/_catalog/pose': typeof CatalogPoseRoute
   '/_catalog/catalog-modal/$category/$id': typeof CatalogCatalogModalCategoryIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/$category/$id' | '/catalog-modal/$category/$id'
+  fullPaths:
+    '/' | '/$category/$id' | '/hair' | '/pose' | '/catalog-modal/$category/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/$category/$id' | '/' | '/catalog-modal/$category/$id'
+  to:
+    '/' | '/$category/$id' | '/hair' | '/pose' | '/catalog-modal/$category/$id'
   id:
     | '__root__'
+    | '/'
     | '/_catalog'
     | '/$category/$id'
-    | '/_catalog/'
+    | '/_catalog/hair'
+    | '/_catalog/pose'
     | '/_catalog/catalog-modal/$category/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
+  IndexRoute: typeof IndexRoute
   CatalogRouteRoute: typeof CatalogRouteRouteWithChildren
   CategoryIdRoute: typeof CategoryIdRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_catalog': {
       id: '/_catalog'
       path: ''
@@ -86,11 +116,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CategoryIdRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_catalog/': {
-      id: '/_catalog/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof CatalogIndexRouteImport
+    '/_catalog/hair': {
+      id: '/_catalog/hair'
+      path: '/hair'
+      fullPath: '/hair'
+      preLoaderRoute: typeof CatalogHairRouteImport
+      parentRoute: typeof CatalogRouteRoute
+    }
+    '/_catalog/pose': {
+      id: '/_catalog/pose'
+      path: '/pose'
+      fullPath: '/pose'
+      preLoaderRoute: typeof CatalogPoseRouteImport
       parentRoute: typeof CatalogRouteRoute
     }
     '/_catalog/catalog-modal/$category/$id': {
@@ -104,12 +141,14 @@ declare module '@tanstack/react-router' {
 }
 
 interface CatalogRouteRouteChildren {
-  CatalogIndexRoute: typeof CatalogIndexRoute
+  CatalogHairRoute: typeof CatalogHairRoute
+  CatalogPoseRoute: typeof CatalogPoseRoute
   CatalogCatalogModalCategoryIdRoute: typeof CatalogCatalogModalCategoryIdRoute
 }
 
 const CatalogRouteRouteChildren: CatalogRouteRouteChildren = {
-  CatalogIndexRoute: CatalogIndexRoute,
+  CatalogHairRoute: CatalogHairRoute,
+  CatalogPoseRoute: CatalogPoseRoute,
   CatalogCatalogModalCategoryIdRoute: CatalogCatalogModalCategoryIdRoute,
 }
 
@@ -118,6 +157,7 @@ const CatalogRouteRouteWithChildren = CatalogRouteRoute._addFileChildren(
 )
 
 const rootRouteChildren: RootRouteChildren = {
+  IndexRoute: IndexRoute,
   CatalogRouteRoute: CatalogRouteRouteWithChildren,
   CategoryIdRoute: CategoryIdRoute,
 }

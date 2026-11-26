@@ -5,7 +5,7 @@ import {
 } from "@tanstack/react-router";
 import { routeTree } from "./routeTree.gen";
 
-const FILTER_KEYS = ["c", "g", "q", "t"] as const;
+const FILTER_KEYS = ["g", "q", "t"] as const;
 
 function parseSearch(search: string) {
   const parsed: Record<string, unknown> = { ...defaultParseSearch(search) };

@@ -5,16 +5,14 @@ import {
   useSearch,
 } from "@tanstack/react-router";
 import {
-  CircleUserRoundIcon,
-  ScissorsIcon,
   SearchIcon,
   SearchXIcon,
   SlidersHorizontalIcon,
   XIcon,
 } from "lucide-react";
-import type { ChangeEvent, ComponentType, KeyboardEvent } from "react";
+import type { ChangeEvent, KeyboardEvent } from "react";
 import { useCallback, useMemo } from "react";
-import { ThemeToggle } from "@/components/theme/theme-toggle";
+import { SiteHeader } from "@/components/site/site-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -34,8 +32,6 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import type { Category } from "@/lib/catalog/schema";
 import type {
   CatalogSearch,
   Filters,
@@ -48,14 +44,8 @@ import {
   readFilters,
   writeFilters,
 } from "@/lib/catalog/search";
-import type { ItemView } from "@/lib/catalog/view";
-import {
-  BROWSE_CATEGORY_ORDER,
-  CATEGORY_LABELS,
-  CATEGORY_ORDER,
-  GENDER_LABELS,
-  isBrowseCategory,
-} from "@/lib/catalog/view";
+import type { BrowseCategory, ItemView } from "@/lib/catalog/view";
+import { CATEGORY_LABELS, GENDER_LABELS } from "@/lib/catalog/view";
 import { CopyButton } from "./copy-button";
 import { ItemImage } from "./item-image";
 
@@ -65,13 +55,10 @@ const GENDER_FILTER_LABELS: Record<GenderFilter, string> = {
   male: "男（含不限）",
 };
 
-const CATEGORY_ICONS: Record<
-  (typeof BROWSE_CATEGORY_ORDER)[number],
-  ComponentType<{ className?: string }>
-> = {
-  hair: ScissorsIcon,
-  pose: CircleUserRoundIcon,
-};
+const CATEGORY_PATHS = {
+  hair: "/hair",
+  pose: "/pose",
+} as const satisfies Record<BrowseCategory, string>;
 
 function matchesGender(item: ItemView, gender: GenderFilter) {
   return gender === "all" || item.gender === "any" || item.gender === gender;
@@ -88,11 +75,10 @@ function matchesQuery(item: ItemView, query: string) {
 }
 
 interface FilterPanelProps {
+  category: BrowseCategory;
   categoryTags: string[];
-  counts: Record<Category, number>;
   filters: Filters;
   idPrefix: string;
-  onCategory: (value: Category) => void;
   onGender: (value: GenderFilter) => void;
   onTag: (value: string, checked: boolean) => void;
   tagCounts: Record<string, number>;
@@ -130,25 +116,14 @@ function TagOption({
 
 // 侧栏和移动端抽屉共用同一套筛选
 function FilterPanel({
+  category,
   categoryTags,
-  counts,
   filters,
   idPrefix,
-  onCategory,
   onGender,
   onTag,
   tagCounts,
 }: FilterPanelProps) {
-  const handleCategory = useCallback(
-    (value: unknown[]) => {
-      const [next] = value;
-      // 再次点击当前类别会清空选择，这里忽略，保证总有一个类别
-      if (typeof next === "string" && isBrowseCategory(next)) {
-        onCategory(next);
-      }
-    },
-    [onCategory]
-  );
   const handleGender = useCallback(
     (value: unknown) => {
       if (typeof value === "string" && isGenderFilter(value)) {
@@ -160,77 +135,41 @@ function FilterPanel({
 
   return (
     <div className="grid gap-6">
-      <section aria-labelledby={`${idPrefix}-category`} className="grid gap-2">
-        <h2
-          className="text-muted-foreground px-2 text-xs font-medium tracking-wide"
-          id={`${idPrefix}-category`}
-        >
-          类别
-        </h2>
-        <ToggleGroup
-          aria-labelledby={`${idPrefix}-category`}
-          className="w-full"
-          onValueChange={handleCategory}
-          orientation="vertical"
-          spacing={1}
-          value={[filters.category]}
-        >
-          {BROWSE_CATEGORY_ORDER.map((value) => {
-            const Icon = CATEGORY_ICONS[value];
-            return (
-              <ToggleGroupItem
-                className="aria-pressed:bg-accent aria-pressed:text-accent-foreground h-10 justify-between rounded-lg px-2"
+      {category === "hair" ? (
+        <section aria-labelledby={`${idPrefix}-gender`} className="grid gap-2">
+          <h2
+            className="text-muted-foreground px-2 text-xs font-medium tracking-wide"
+            id={`${idPrefix}-gender`}
+          >
+            性别
+          </h2>
+          <RadioGroup
+            aria-labelledby={`${idPrefix}-gender`}
+            className="gap-0"
+            onValueChange={handleGender}
+            value={filters.gender}
+          >
+            {GENDER_FILTERS.map((value) => (
+              <div
+                className="can-hover:hover:bg-muted flex min-h-9 items-center gap-3 rounded-lg px-2"
                 key={value}
-                value={value}
               >
-                <span className="flex items-center gap-2.5">
-                  <Icon className="text-muted-foreground size-4" />
-                  {CATEGORY_LABELS[value]}
-                </span>
-                <span className="text-muted-foreground font-mono text-xs tabular-nums">
-                  {counts[value]}
-                </span>
-              </ToggleGroupItem>
-            );
-          })}
-        </ToggleGroup>
-      </section>
-
-      <Separator />
-
-      <section aria-labelledby={`${idPrefix}-gender`} className="grid gap-2">
-        <h2
-          className="text-muted-foreground px-2 text-xs font-medium tracking-wide"
-          id={`${idPrefix}-gender`}
-        >
-          性别
-        </h2>
-        <RadioGroup
-          aria-labelledby={`${idPrefix}-gender`}
-          className="gap-0"
-          onValueChange={handleGender}
-          value={filters.gender}
-        >
-          {GENDER_FILTERS.map((value) => (
-            <div
-              className="can-hover:hover:bg-muted flex min-h-9 items-center gap-3 rounded-lg px-2"
-              key={value}
-            >
-              <RadioGroupItem id={`${idPrefix}-g-${value}`} value={value} />
-              <Label
-                className="flex-1 cursor-pointer py-2 font-normal"
-                htmlFor={`${idPrefix}-g-${value}`}
-              >
-                {GENDER_FILTER_LABELS[value]}
-              </Label>
-            </div>
-          ))}
-        </RadioGroup>
-      </section>
+                <RadioGroupItem id={`${idPrefix}-g-${value}`} value={value} />
+                <Label
+                  className="flex-1 cursor-pointer py-2 font-normal"
+                  htmlFor={`${idPrefix}-g-${value}`}
+                >
+                  {GENDER_FILTER_LABELS[value]}
+                </Label>
+              </div>
+            ))}
+          </RadioGroup>
+        </section>
+      ) : null}
 
       {categoryTags.length > 0 ? (
         <>
-          <Separator />
+          {category === "hair" ? <Separator /> : null}
           <section aria-labelledby={`${idPrefix}-tags`} className="grid gap-2">
             <h2
               className="text-muted-foreground px-2 text-xs font-medium tracking-wide"
@@ -379,11 +318,17 @@ function ItemCard({ item, search }: { item: ItemView; search: CatalogSearch }) {
   );
 }
 
-export function CatalogBrowser({ items }: { items: ItemView[] }) {
+export function CatalogBrowser({
+  category,
+  items,
+}: {
+  category: BrowseCategory;
+  items: ItemView[];
+}) {
   const search = useSearch({ from: "/_catalog" });
   const navigate = useNavigate();
   const filters = readFilters(search);
-  const { category, gender, query, tags } = filters;
+  const { gender, query, tags } = filters;
 
   const update = useCallback(
     (patch: (prev: Filters) => Filters) => {
@@ -391,10 +336,10 @@ export function CatalogBrowser({ items }: { items: ItemView[] }) {
         replace: true,
         resetScroll: false,
         search: (previous) => writeFilters(patch(readFilters(previous))),
-        to: "/",
+        to: CATEGORY_PATHS[category],
       });
     },
-    [navigate]
+    [category, navigate]
   );
 
   const live = useMemo(() => items.filter((item) => !item.deprecated), [items]);
@@ -405,15 +350,6 @@ export function CatalogBrowser({ items }: { items: ItemView[] }) {
       ),
     [gender, live, query]
   );
-  const counts = useMemo(() => {
-    const result = Object.fromEntries(
-      CATEGORY_ORDER.map((value) => [value, 0])
-    ) as Record<Category, number>;
-    for (const item of matched) {
-      result[item.category] += 1;
-    }
-    return result;
-  }, [matched]);
   const categoryTags = useMemo(
     () => [
       ...new Set(
@@ -442,11 +378,6 @@ export function CatalogBrowser({ items }: { items: ItemView[] }) {
   const hasFilters = gender !== "all" || tags.length > 0 || query !== "";
   const activeCount = tags.length + (gender === "all" ? 0 : 1);
 
-  const handleCategory = useCallback(
-    (value: Category) =>
-      update((prev) => ({ ...prev, category: value, tags: [] })),
-    [update]
-  );
   const handleGender = useCallback(
     (value: GenderFilter) => update((prev) => ({ ...prev, gender: value })),
     [update]
@@ -484,16 +415,12 @@ export function CatalogBrowser({ items }: { items: ItemView[] }) {
     () => update((prev) => ({ ...prev, gender: "all" })),
     [update]
   );
-  const clearAll = useCallback(
-    () => update((prev) => ({ ...DEFAULT_FILTERS, category: prev.category })),
-    [update]
-  );
+  const clearAll = useCallback(() => update(() => DEFAULT_FILTERS), [update]);
 
   const panelProps = {
+    category,
     categoryTags,
-    counts,
     filters,
-    onCategory: handleCategory,
     onGender: handleGender,
     onTag: handleTag,
     tagCounts,
@@ -501,17 +428,9 @@ export function CatalogBrowser({ items }: { items: ItemView[] }) {
 
   return (
     <>
-      <header className="bg-background/85 sticky top-0 z-30 border-b backdrop-blur-md">
-        <div className="flex h-16 items-center gap-3 px-4 md:gap-4 md:px-6">
-          <Link className="flex shrink-0 items-center gap-2" to="/">
-            <span className="bg-foreground text-background grid size-7 place-items-center rounded-lg font-mono text-xs font-semibold">
-              cs
-            </span>
-            <span className="hidden font-mono font-semibold tracking-tight sm:inline">
-              cyber-shot
-            </span>
-          </Link>
-
+      <SiteHeader wide />
+      <div className="bg-background/85 sticky top-14 z-20 border-b backdrop-blur-md">
+        <div className="flex h-14 items-center gap-3 px-4 md:gap-4 md:px-6">
           <div className="relative min-w-0 flex-1 md:max-w-md">
             <SearchIcon className="text-muted-foreground pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2" />
             <Input
@@ -570,15 +489,14 @@ export function CatalogBrowser({ items }: { items: ItemView[] }) {
                 </SheetFooter>
               </SheetContent>
             </Sheet>
-            <ThemeToggle />
           </div>
         </div>
-      </header>
+      </div>
 
       <div className="md:grid md:grid-cols-[15rem_minmax(0,1fr)] lg:grid-cols-[16rem_minmax(0,1fr)]">
         <aside
           aria-label="筛选"
-          className="bg-sidebar text-sidebar-foreground sticky top-16 hidden h-[calc(100svh-4rem)] border-r md:block"
+          className="bg-sidebar text-sidebar-foreground sticky top-28 hidden h-[calc(100svh-7rem)] border-r md:block"
         >
           <ScrollArea className="h-full">
             <div className="p-3 pb-8">
@@ -668,14 +586,15 @@ export function CatalogBrowser({ items }: { items: ItemView[] }) {
 export function CatalogBrowserFallback() {
   return (
     <div aria-busy="true">
-      <div className="flex h-16 items-center gap-4 border-b px-4 md:px-6">
-        <Skeleton className="size-7 rounded-lg" />
+      <SiteHeader wide />
+      <div className="flex h-14 items-center gap-4 border-b px-4 md:px-6">
         <Skeleton className="h-10 flex-1 md:max-w-md" />
       </div>
       <div className="md:grid md:grid-cols-[15rem_minmax(0,1fr)] lg:grid-cols-[16rem_minmax(0,1fr)]">
         <div className="hidden gap-2 border-r p-3 md:grid md:content-start">
-          {BROWSE_CATEGORY_ORDER.map((category) => (
-            <Skeleton className="h-10 rounded-lg" key={category} />
+          {Array.from({ length: 4 }, (_, index) => (
+            // biome-ignore lint/suspicious/noArrayIndexKey: 骨架屏没有业务 id
+            <Skeleton className="h-9 rounded-lg" key={index} />
           ))}
         </div>
         <ul className="grid grid-cols-2 gap-3 px-4 py-5 sm:grid-cols-3 md:px-6 lg:grid-cols-4 xl:grid-cols-5">

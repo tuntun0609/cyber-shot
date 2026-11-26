@@ -8,6 +8,8 @@ export const BROWSE_CATEGORY_ORDER = [
   "pose",
 ] as const satisfies readonly Category[];
 
+export type BrowseCategory = (typeof BROWSE_CATEGORY_ORDER)[number];
+
 export const CATEGORY_LABELS: Record<Category, string> = {
   body: "身材",
   hair: "发型",

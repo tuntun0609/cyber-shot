@@ -185,7 +185,12 @@ export function ItemDetail({ item }: { item: ItemView }) {
               <li key={tag}>
                 <Badge
                   className="h-8 px-3 text-sm"
-                  render={<Link search={{ c: item.category, t: tag }} to="/" />}
+                  render={
+                    <Link
+                      search={{ t: tag }}
+                      to={item.category === "pose" ? "/pose" : "/hair"}
+                    />
+                  }
                   variant="outline"
                 >
                   {tag}
