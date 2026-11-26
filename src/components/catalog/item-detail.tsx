@@ -169,7 +169,7 @@ export function ItemDetail({ item }: { item: ItemView }) {
 
         <div className="grid gap-1.5">
           <p className="text-muted-foreground font-mono text-xs tracking-wide">
-            {CATEGORY_LABELS[item.category]} / {item.id.toUpperCase()}
+            {CATEGORY_LABELS[item.category]} / #{item.id}
           </p>
           <h1 className="text-3xl font-semibold tracking-tight text-balance">
             {item.name}

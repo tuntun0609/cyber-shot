@@ -1,0 +1,172 @@
+{
+  "version": "6",
+  "dialect": "sqlite",
+  "id": "c8f553c2-f5dd-4c1f-9ba9-c0c5d613ade0",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "tables": {
+    "catalog_items": {
+      "name": "catalog_items",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "category": {
+          "name": "category",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "prompt_en": {
+          "name": "prompt_en",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "prompt_zh": {
+          "name": "prompt_zh",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "tags": {
+          "name": "tags",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'[]'"
+        },
+        "gender": {
+          "name": "gender",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "image": {
+          "name": "image",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "thumb": {
+          "name": "thumb",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "image_aspect_ratio": {
+          "name": "image_aspect_ratio",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "thumb_aspect_ratio": {
+          "name": "thumb_aspect_ratio",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "skeleton": {
+          "name": "skeleton",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "deprecated": {
+          "name": "deprecated",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": false
+        }
+      },
+      "indexes": {
+        "catalog_items_category_idx": {
+          "name": "catalog_items_category_idx",
+          "columns": ["category", "deprecated"],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {
+        "catalog_items_category_check": {
+          "name": "catalog_items_category_check",
+          "value": "\"catalog_items\".\"category\" IN ('hair','body','pose')"
+        },
+        "catalog_items_gender_check": {
+          "name": "catalog_items_gender_check",
+          "value": "\"catalog_items\".\"gender\" IN ('female','male','any')"
+        },
+        "catalog_items_name_check": {
+          "name": "catalog_items_name_check",
+          "value": "length(\"catalog_items\".\"name\") > 0"
+        },
+        "catalog_items_prompt_en_check": {
+          "name": "catalog_items_prompt_en_check",
+          "value": "length(\"catalog_items\".\"prompt_en\") > 0"
+        },
+        "catalog_items_prompt_zh_check": {
+          "name": "catalog_items_prompt_zh_check",
+          "value": "length(\"catalog_items\".\"prompt_zh\") > 0"
+        },
+        "catalog_items_tags_check": {
+          "name": "catalog_items_tags_check",
+          "value": "json_valid(\"catalog_items\".\"tags\")"
+        },
+        "catalog_items_image_check": {
+          "name": "catalog_items_image_check",
+          "value": "length(\"catalog_items\".\"image\") > 0"
+        },
+        "catalog_items_thumb_check": {
+          "name": "catalog_items_thumb_check",
+          "value": "length(\"catalog_items\".\"thumb\") > 0"
+        },
+        "catalog_items_image_ratio_check": {
+          "name": "catalog_items_image_ratio_check",
+          "value": "\"catalog_items\".\"image_aspect_ratio\" IS NULL OR \"catalog_items\".\"image_aspect_ratio\" > 0"
+        },
+        "catalog_items_thumb_ratio_check": {
+          "name": "catalog_items_thumb_ratio_check",
+          "value": "\"catalog_items\".\"thumb_aspect_ratio\" IS NULL OR \"catalog_items\".\"thumb_aspect_ratio\" > 0"
+        },
+        "catalog_items_skeleton_check": {
+          "name": "catalog_items_skeleton_check",
+          "value": "\"catalog_items\".\"skeleton\" IS NULL OR \"catalog_items\".\"category\" = 'pose'"
+        }
+      }
+    }
+  },
+  "views": {},
+  "enums": {},
+  "_meta": {
+    "schemas": {},
+    "tables": {},
+    "columns": {}
+  },
+  "internal": {
+    "indexes": {}
+  }
+}

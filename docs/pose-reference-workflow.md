@@ -1,6 +1,6 @@
 # 动作参考图生成与入库流程
 
-本文件供 AI 执行：将用户提供的人物图片转换为黑线白底、无身份特征、无服装分界的白模动作稿，并加入 cyber-shot 的动作素材库。以本次已收录的 `p-008`～`p-012` 为实践参考。
+本文件供 AI 执行：将用户提供的人物图片转换为黑线白底、无身份特征、无服装分界的白模动作稿，并加入 cyber-shot 的动作素材库。以已收录的连续白模动作为实践参考。
 
 ## 1. 下次如何使用
 
@@ -157,27 +157,27 @@ and background. Output one edited final image.
 
 仅在任务包含入库时执行；“按本文生成并入库”已提供授权，不再为常规文件更新询问确认。
 
-1. 读取 `content/poses.json`、`src/lib/catalog/schema.ts` 与现有图片，检查未提交改动，保留用户已有工作。
-2. 查找当前所有已使用编号，按最大编号继续分配 `p-NNN`，包括已下架记录；检查文件名冲突。不写死本次之后的起始编号，也不重排旧记录。已发布 id 不修改、不复用。
+1. 读取 `src/db/schema.ts` 与现有图片，检查未提交改动，保留用户已有工作。素材数据在 D1 的 `catalog_items` 表中，不再有 `content/poses.json`。
+2. 条目的 `id` 由 D1 自增分配，不再手工编号，也不重排旧记录；已发布 id 不修改、不复用，下架只把 `deprecated` 设为 `1`。图片文件名使用描述性名称，并检查文件名冲突。
 3. 先准备已验收的正式原图和缩略图，再追加数据，避免出现空记录或失效图片。
 4. 为每个动作填写中文名称、中英文提示词、标签、性别与图片字段，保持项目字段格式；默认 `gender: "any"`，除非动作确有必要区分且用户要求。
 5. 只在有实际骨架图时填写 `skeleton`；不创建占位路径，也不为普通动作新增 schema 字段。
 6. 更新 README 中的收录数量与动作范围，数量从当时的数据计算。
 7. 单纯新增素材不改 UI、不新增路由或依赖。若需要调整路由，按 TanStack Start 的文件路由约定和仓库开发规范处理。
 
-以下仅为字段示例；`p-013` 不是固定可用编号，必须替换成当时分配的 id：
+以下为待入库条目的字段示例，`id` 由 D1 自增分配，不需要填写；写库方式见 README「素材数据」：
 
 ```json
 {
-  "id": "p-013",
+  "category": "pose",
   "name": "展臂垂手交叠腿坐姿",
   "promptEn": "Sit with both upper arms spread to the sides and the elbows bent, allowing the forearms and hands to hang naturally. Cross the thighs in the foreground, lower the chin slightly, and preserve the asymmetric hand positions and leg overlap.",
   "promptZh": "坐姿，双上臂向两侧展开并屈肘，前臂与双手自然下垂；大腿在前景交叠，下巴略收，保留双手位置的不对称与腿部遮挡。",
   "tags": ["坐姿", "展臂", "双手下垂", "交叠腿"],
   "gender": "any",
-  "image": "/poses/p-013-white.png",
+  "image": "/poses/spread-arms-crossed-legs-white.png",
   "imageAspectRatio": 0.75,
-  "thumb": "/poses/p-013-white.thumb.webp",
+  "thumb": "/poses/spread-arms-crossed-legs-white.thumb.webp",
   "thumbAspectRatio": 0.75
 }
 ```
@@ -204,7 +204,7 @@ git diff --check
 
 同时验证：
 
-- 数据通过项目的 Zod 校验，所有 id 唯一。
+- 写库成功且未触发 D1 的 CHECK 或 NOT NULL 约束，新增行的 `category` 为 `pose`。
 - 新增条数与通过验收的图片数相等，未覆盖原有记录和图片。
 - 全部 `image`、`thumb` 路径真实存在，图片可读取且大小非零。
 - 正式图与缩略图分别为 `1152×1536`、`384×512`，宽高比字段均为 `0.75`。

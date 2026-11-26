@@ -69,9 +69,13 @@ function matchesQuery(item: ItemView, query: string) {
     return true;
   }
   const needle = query.toLowerCase();
-  return [item.id, item.name, item.promptZh, item.promptEn, ...item.tags].some(
-    (field) => field.toLowerCase().includes(needle)
-  );
+  return [
+    String(item.id),
+    item.name,
+    item.promptZh,
+    item.promptEn,
+    ...item.tags,
+  ].some((field) => field.toLowerCase().includes(needle));
 }
 
 interface FilterPanelProps {
@@ -234,7 +238,7 @@ function TagFilter({
 }
 
 function ItemCard({ item, search }: { item: ItemView; search: CatalogSearch }) {
-  const params = { category: item.category, id: item.id };
+  const params = { category: item.category, id: String(item.id) };
   const detailLink = linkOptions({
     mask: { params, search: {}, to: "/$category/$id", unmaskOnReload: true },
     params,
@@ -310,7 +314,7 @@ function ItemCard({ item, search }: { item: ItemView; search: CatalogSearch }) {
             <Badge variant="outline">{GENDER_LABELS[item.gender]}</Badge>
           </div>
           <span className="text-muted-foreground mt-auto font-mono text-xs">
-            {item.id.toUpperCase()}
+            #{item.id}
           </span>
         </div>
       </Card>

@@ -1,14 +1,14 @@
 import { createServerFn } from "@tanstack/react-start";
+import type { CatalogItem } from ".";
 import { getItems, toView } from ".";
-import type { CatalogItem } from "./schema";
 import type { ItemView } from "./view";
 
 type HomeCategory = "hair" | "pose";
 
 // 落地页精选：写死 id，保证构图稳定；id 不存在或已下架时由同类别其他条目补位
-const FEATURED_IDS: Record<HomeCategory, readonly string[]> = {
-  hair: ["h-001", "h-002", "h-017", "h-025"],
-  pose: ["p-006", "p-013", "p-014", "p-020"],
+const FEATURED_IDS: Record<HomeCategory, readonly number[]> = {
+  hair: [1, 2, 17, 25],
+  pose: [39, 46, 47, 53],
 };
 const FEATURED_SIZE = 4;
 const TAG_LIMIT = 4;
@@ -19,8 +19,9 @@ export interface HomeSection {
   tags: string[];
 }
 
-function getLive(category: HomeCategory): CatalogItem[] {
-  return getItems(category).filter((item) => !item.deprecated);
+async function getLive(category: HomeCategory): Promise<CatalogItem[]> {
+  const items = await getItems(category);
+  return items.filter((item) => !item.deprecated);
 }
 
 function pickFeatured(category: HomeCategory, live: CatalogItem[]) {
@@ -44,8 +45,8 @@ function topTags(live: CatalogItem[]) {
     .map(([tag]) => tag);
 }
 
-function buildSection(category: HomeCategory): HomeSection {
-  const live = getLive(category);
+async function buildSection(category: HomeCategory): Promise<HomeSection> {
+  const live = await getLive(category);
   return {
     count: live.length,
     items: pickFeatured(category, live),
@@ -53,7 +54,10 @@ function buildSection(category: HomeCategory): HomeSection {
   };
 }
 
-export const loadHome = createServerFn().handler(() => ({
-  hair: buildSection("hair"),
-  pose: buildSection("pose"),
-}));
+export const loadHome = createServerFn().handler(async () => {
+  const [hair, pose] = await Promise.all([
+    buildSection("hair"),
+    buildSection("pose"),
+  ]);
+  return { hair, pose };
+});

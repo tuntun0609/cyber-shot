@@ -1,4 +1,6 @@
-import type { Category } from "./schema";
+export const CATEGORIES = ["hair", "body", "pose"] as const;
+
+export type Category = (typeof CATEGORIES)[number];
 
 // 客户端组件只依赖这个文件，避免把 zod 和 JSON 数据打进浏览器包
 export const CATEGORY_ORDER: readonly Category[] = ["hair", "body", "pose"];
@@ -26,7 +28,7 @@ export interface ItemView {
   category: Category;
   deprecated: boolean;
   gender: "female" | "male" | "any";
-  id: string;
+  id: number;
   imageAspectRatio?: number;
   imageSrc: string;
   name: string;

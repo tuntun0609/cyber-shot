@@ -6,7 +6,10 @@ import { isCategory } from "./view";
 
 export const loadCatalog = createServerFn().handler(() => getAllViews());
 
-const itemParams = z.object({ category: z.string(), id: z.string() });
+const itemParams = z.object({
+  category: z.string(),
+  id: z.string().regex(/^[1-9]\d{0,9}$/u),
+});
 
 export const loadCatalogItem = createServerFn()
   .validator((params: { category: string; id: string }) => {
@@ -16,9 +19,11 @@ export const loadCatalogItem = createServerFn()
     }
     return parsed.data;
   })
-  .handler(({ data }) => {
+  .handler(async ({ data }) => {
     const { category, id } = data;
-    const item = isCategory(category) ? getItem(category, id) : undefined;
+    const item = isCategory(category)
+      ? await getItem(category, Number(id))
+      : undefined;
     if (!item) {
       throw notFound();
     }

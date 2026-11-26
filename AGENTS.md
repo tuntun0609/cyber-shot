@@ -14,3 +14,4 @@
 - `src/routeTree.gen.ts` 由路由插件生成，不手工修改。
 - 检查规则以 `biome.json` 为准，修改代码后运行 `bun run check` 和 `bun run typecheck`。
 - 使用 `bun run fix` 处理可自动修复的问题，不通过关闭规则规避检查。
+- 素材数据（发型、身材、动作）存放在 D1 的 `catalog_items` 表，不再使用 `content/*.json`；表结构改动通过 drizzle 迁移完成。

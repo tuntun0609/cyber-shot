@@ -17,6 +17,9 @@ export default defineConfig(({ command }) => ({
                 };
                 config.externals = [
                   ({ request }, callback) => {
+                    if (request === "cloudflare:workers") {
+                      return callback(null, `module ${request}`);
+                    }
                     if (!(request && isBuiltin(request))) {
                       return callback();
                     }
