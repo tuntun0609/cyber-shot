@@ -313,9 +313,6 @@ function ItemCard({ item, search }: { item: ItemView; search: CatalogSearch }) {
             ))}
             <Badge variant="outline">{GENDER_LABELS[item.gender]}</Badge>
           </div>
-          <span className="text-muted-foreground mt-auto font-mono text-xs">
-            #{item.id}
-          </span>
         </div>
       </Card>
     </li>
