@@ -11,9 +11,16 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CatalogRouteRouteImport } from './routes/_catalog/route'
+import { Route as AdminRouteRouteImport } from './routes/admin/route'
 import { Route as CategoryIdRouteImport } from './routes/$category/$id'
 import { Route as CatalogHairRouteImport } from './routes/_catalog/hair'
 import { Route as CatalogPoseRouteImport } from './routes/_catalog/pose'
+import { Route as AdminIndexRouteImport } from './routes/admin/index'
+import { Route as AdminCategoryRouteRouteImport } from './routes/admin/$category/route'
+import { Route as CyberShotSplatRouteImport } from './routes/cyber-shot.$'
+import { Route as AdminCategoryIndexRouteImport } from './routes/admin/$category/index'
+import { Route as AdminCategoryIdRouteImport } from './routes/admin/$category/$id'
+import { Route as AdminCategoryNewRouteImport } from './routes/admin/$category/new'
 import { Route as CatalogCatalogModalCategoryIdRouteImport } from './routes/_catalog/catalog-modal/$category/$id'
 
 const IndexRoute = IndexRouteImport.update({
@@ -23,6 +30,11 @@ const IndexRoute = IndexRouteImport.update({
 } as any)
 const CatalogRouteRoute = CatalogRouteRouteImport.update({
   id: '/_catalog',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRouteRoute = AdminRouteRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CategoryIdRoute = CategoryIdRouteImport.update({
@@ -40,6 +52,36 @@ const CatalogPoseRoute = CatalogPoseRouteImport.update({
   path: '/pose',
   getParentRoute: () => CatalogRouteRoute,
 } as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const AdminCategoryRouteRoute = AdminCategoryRouteRouteImport.update({
+  id: '/$category',
+  path: '/$category',
+  getParentRoute: () => AdminRouteRoute,
+} as any)
+const CyberShotSplatRoute = CyberShotSplatRouteImport.update({
+  id: '/cyber-shot/$',
+  path: '/cyber-shot/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminCategoryIndexRoute = AdminCategoryIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminCategoryRouteRoute,
+} as any)
+const AdminCategoryIdRoute = AdminCategoryIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => AdminCategoryRouteRoute,
+} as any)
+const AdminCategoryNewRoute = AdminCategoryNewRouteImport.update({
+  id: '/new',
+  path: '/new',
+  getParentRoute: () => AdminCategoryRouteRoute,
+} as any)
 const CatalogCatalogModalCategoryIdRoute =
   CatalogCatalogModalCategoryIdRouteImport.update({
     id: '/catalog-modal/$category/$id',
@@ -49,9 +91,16 @@ const CatalogCatalogModalCategoryIdRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteRouteWithChildren
+  '/admin/$category': typeof AdminCategoryRouteRouteWithChildren
   '/$category/$id': typeof CategoryIdRoute
   '/hair': typeof CatalogHairRoute
   '/pose': typeof CatalogPoseRoute
+  '/cyber-shot/$': typeof CyberShotSplatRoute
+  '/admin/': typeof AdminIndexRoute
+  '/admin/$category/$id': typeof AdminCategoryIdRoute
+  '/admin/$category/new': typeof AdminCategoryNewRoute
+  '/admin/$category/': typeof AdminCategoryIndexRoute
   '/catalog-modal/$category/$id': typeof CatalogCatalogModalCategoryIdRoute
 }
 export interface FileRoutesByTo {
@@ -59,38 +108,79 @@ export interface FileRoutesByTo {
   '/$category/$id': typeof CategoryIdRoute
   '/hair': typeof CatalogHairRoute
   '/pose': typeof CatalogPoseRoute
+  '/cyber-shot/$': typeof CyberShotSplatRoute
+  '/admin': typeof AdminIndexRoute
+  '/admin/$category/$id': typeof AdminCategoryIdRoute
+  '/admin/$category/new': typeof AdminCategoryNewRoute
+  '/admin/$category': typeof AdminCategoryIndexRoute
   '/catalog-modal/$category/$id': typeof CatalogCatalogModalCategoryIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_catalog': typeof CatalogRouteRouteWithChildren
+  '/admin': typeof AdminRouteRouteWithChildren
+  '/admin/$category': typeof AdminCategoryRouteRouteWithChildren
   '/$category/$id': typeof CategoryIdRoute
   '/_catalog/hair': typeof CatalogHairRoute
   '/_catalog/pose': typeof CatalogPoseRoute
+  '/cyber-shot/$': typeof CyberShotSplatRoute
+  '/admin/': typeof AdminIndexRoute
+  '/admin/$category/$id': typeof AdminCategoryIdRoute
+  '/admin/$category/new': typeof AdminCategoryNewRoute
+  '/admin/$category/': typeof AdminCategoryIndexRoute
   '/_catalog/catalog-modal/$category/$id': typeof CatalogCatalogModalCategoryIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/$category/$id' | '/hair' | '/pose' | '/catalog-modal/$category/$id'
+    | '/'
+    | '/admin'
+    | '/admin/$category'
+    | '/$category/$id'
+    | '/hair'
+    | '/pose'
+    | '/cyber-shot/$'
+    | '/admin/'
+    | '/admin/$category/$id'
+    | '/admin/$category/new'
+    | '/admin/$category/'
+    | '/catalog-modal/$category/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
-    '/' | '/$category/$id' | '/hair' | '/pose' | '/catalog-modal/$category/$id'
+    | '/'
+    | '/$category/$id'
+    | '/hair'
+    | '/pose'
+    | '/cyber-shot/$'
+    | '/admin'
+    | '/admin/$category/$id'
+    | '/admin/$category/new'
+    | '/admin/$category'
+    | '/catalog-modal/$category/$id'
   id:
     | '__root__'
     | '/'
     | '/_catalog'
+    | '/admin'
+    | '/admin/$category'
     | '/$category/$id'
     | '/_catalog/hair'
     | '/_catalog/pose'
+    | '/cyber-shot/$'
+    | '/admin/'
+    | '/admin/$category/$id'
+    | '/admin/$category/new'
+    | '/admin/$category/'
     | '/_catalog/catalog-modal/$category/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CatalogRouteRoute: typeof CatalogRouteRouteWithChildren
+  AdminRouteRoute: typeof AdminRouteRouteWithChildren
   CategoryIdRoute: typeof CategoryIdRoute
+  CyberShotSplatRoute: typeof CyberShotSplatRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -107,6 +197,13 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: '/'
       preLoaderRoute: typeof CatalogRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/$category/$id': {
@@ -129,6 +226,48 @@ declare module '@tanstack/react-router' {
       fullPath: '/pose'
       preLoaderRoute: typeof CatalogPoseRouteImport
       parentRoute: typeof CatalogRouteRoute
+    }
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/$category': {
+      id: '/admin/$category'
+      path: '/$category'
+      fullPath: '/admin/$category'
+      preLoaderRoute: typeof AdminCategoryRouteRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/cyber-shot/$': {
+      id: '/cyber-shot/$'
+      path: '/cyber-shot/$'
+      fullPath: '/cyber-shot/$'
+      preLoaderRoute: typeof CyberShotSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/$category/': {
+      id: '/admin/$category/'
+      path: '/'
+      fullPath: '/admin/$category/'
+      preLoaderRoute: typeof AdminCategoryIndexRouteImport
+      parentRoute: typeof AdminCategoryRouteRoute
+    }
+    '/admin/$category/$id': {
+      id: '/admin/$category/$id'
+      path: '/$id'
+      fullPath: '/admin/$category/$id'
+      preLoaderRoute: typeof AdminCategoryIdRouteImport
+      parentRoute: typeof AdminCategoryRouteRoute
+    }
+    '/admin/$category/new': {
+      id: '/admin/$category/new'
+      path: '/new'
+      fullPath: '/admin/$category/new'
+      preLoaderRoute: typeof AdminCategoryNewRouteImport
+      parentRoute: typeof AdminCategoryRouteRoute
     }
     '/_catalog/catalog-modal/$category/$id': {
       id: '/_catalog/catalog-modal/$category/$id'
@@ -156,10 +295,41 @@ const CatalogRouteRouteWithChildren = CatalogRouteRoute._addFileChildren(
   CatalogRouteRouteChildren,
 )
 
+interface AdminCategoryRouteRouteChildren {
+  AdminCategoryIdRoute: typeof AdminCategoryIdRoute
+  AdminCategoryNewRoute: typeof AdminCategoryNewRoute
+  AdminCategoryIndexRoute: typeof AdminCategoryIndexRoute
+}
+
+const AdminCategoryRouteRouteChildren: AdminCategoryRouteRouteChildren = {
+  AdminCategoryIdRoute: AdminCategoryIdRoute,
+  AdminCategoryNewRoute: AdminCategoryNewRoute,
+  AdminCategoryIndexRoute: AdminCategoryIndexRoute,
+}
+
+const AdminCategoryRouteRouteWithChildren =
+  AdminCategoryRouteRoute._addFileChildren(AdminCategoryRouteRouteChildren)
+
+interface AdminRouteRouteChildren {
+  AdminCategoryRouteRoute: typeof AdminCategoryRouteRouteWithChildren
+  AdminIndexRoute: typeof AdminIndexRoute
+}
+
+const AdminRouteRouteChildren: AdminRouteRouteChildren = {
+  AdminCategoryRouteRoute: AdminCategoryRouteRouteWithChildren,
+  AdminIndexRoute: AdminIndexRoute,
+}
+
+const AdminRouteRouteWithChildren = AdminRouteRoute._addFileChildren(
+  AdminRouteRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CatalogRouteRoute: CatalogRouteRouteWithChildren,
+  AdminRouteRoute: AdminRouteRouteWithChildren,
   CategoryIdRoute: CategoryIdRoute,
+  CyberShotSplatRoute: CyberShotSplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

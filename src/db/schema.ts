@@ -29,6 +29,13 @@ export const catalogItems = sqliteTable(
     deprecated: integer("deprecated", { mode: "boolean" })
       .notNull()
       .default(false),
+    // 毫秒时间戳；默认值 0 仅用于迁移已有行，写入时由服务端显式设置
+    createdAt: integer("created_at", { mode: "timestamp_ms" })
+      .notNull()
+      .default(sql`0`),
+    updatedAt: integer("updated_at", { mode: "timestamp_ms" })
+      .notNull()
+      .default(sql`0`),
   },
   (table) => [
     index("catalog_items_category_idx").on(table.category, table.deprecated),

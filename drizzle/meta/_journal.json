@@ -8,6 +8,13 @@
       "when": 1795691470836,
       "tag": "0000_init_catalog_items",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1795705851877,
+      "tag": "0001_add_catalog_timestamps",
+      "breakpoints": true
     }
   ]
 }

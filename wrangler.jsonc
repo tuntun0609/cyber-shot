@@ -18,6 +18,12 @@
     "directory": "./dist/client",
     "html_handling": "drop-trailing-slash"
   },
+  "r2_buckets": [
+    {
+      "binding": "BUCKET",
+      "bucket_name": "oss"
+    }
+  ],
   "d1_databases": [
     {
       "binding": "DB",
