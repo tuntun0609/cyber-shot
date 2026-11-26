@@ -2,7 +2,7 @@
 
 import { MonitorIcon, MoonIcon, SunIcon } from "lucide-react";
 import { useTheme } from "next-themes";
-import { useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -22,6 +22,12 @@ const THEMES = [
 
 export function ThemeToggle() {
   const { setTheme, theme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  // 水合前读不到 theme，先用占位图标避免不一致
+  const CurrentIcon = mounted
+    ? (THEMES.find((item) => item.value === theme)?.icon ?? MonitorIcon)
+    : MonitorIcon;
   const handleChange = useCallback(
     (value: unknown) => {
       if (typeof value === "string") {
@@ -36,9 +42,7 @@ export function ThemeToggle() {
       <DropdownMenuTrigger
         render={<Button aria-label="切换主题" size="icon-lg" variant="ghost" />}
       >
-        {/* 图标按当前实际主题切换，避免水合前读不到 theme */}
-        <SunIcon className="dark:hidden" />
-        <MoonIcon className="hidden dark:block" />
+        <CurrentIcon />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-36">
         <DropdownMenuGroup>
