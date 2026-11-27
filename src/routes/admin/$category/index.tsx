@@ -1,5 +1,11 @@
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
-import { PlusIcon, SearchIcon } from "lucide-react";
+import {
+  EyeOffIcon,
+  PencilIcon,
+  PlusIcon,
+  SearchIcon,
+  Undo2Icon,
+} from "lucide-react";
 import type { ChangeEvent } from "react";
 import { useCallback, useMemo } from "react";
 import { toast } from "sonner";
@@ -42,6 +48,10 @@ export const Route = createFileRoute("/admin/$category/")({
 });
 
 const GENDER_ITEMS = { all: "全部性别", ...GENDER_LABELS };
+const ACTION_BUTTON_CLASS = "w-7 px-0 xl:w-auto xl:min-w-20 xl:px-3";
+const ACTION_LABEL_CLASS = "hidden xl:inline";
+const ACTION_COLUMN_CLASS =
+  "sticky right-0 z-10 w-24 bg-card shadow-[inset_1px_0_0_var(--border)] transition-colors group-hover/row:bg-muted/50 xl:w-48";
 
 function matches(
   item: ItemView,
@@ -78,9 +88,19 @@ function ToggleButton({
   onToggle: (item: ItemView) => void;
 }) {
   const handleClick = useCallback(() => onToggle(item), [item, onToggle]);
+  const Icon = item.deprecated ? Undo2Icon : EyeOffIcon;
+  const label = item.deprecated ? "恢复" : "下架";
   return (
-    <Button onClick={handleClick} size="sm" variant="ghost">
-      {item.deprecated ? "恢复" : "下架"}
+    <Button
+      aria-label={label}
+      className={cn(ACTION_BUTTON_CLASS, "text-foreground")}
+      onClick={handleClick}
+      size="sm"
+      title={label}
+      variant="outline"
+    >
+      <Icon />
+      <span className={ACTION_LABEL_CLASS}>{label}</span>
     </Button>
   );
 }
@@ -222,7 +242,12 @@ function AdminCatalogList() {
               <TableHead className="text-muted-foreground text-xs">
                 状态
               </TableHead>
-              <TableHead className="text-muted-foreground text-right text-xs">
+              <TableHead
+                className={cn(
+                  ACTION_COLUMN_CLASS,
+                  "text-muted-foreground text-right text-xs"
+                )}
+              >
                 操作
               </TableHead>
             </TableRow>
@@ -230,7 +255,10 @@ function AdminCatalogList() {
           <TableBody>
             {visible.map((item) => (
               <TableRow
-                className={cn(item.deprecated && "text-muted-foreground")}
+                className={cn(
+                  "group/row",
+                  item.deprecated && "text-muted-foreground"
+                )}
                 key={`${item.category}-${item.id}`}
               >
                 <TableCell>
@@ -278,16 +306,20 @@ function AdminCatalogList() {
                     {item.deprecated ? "已下架" : "上架中"}
                   </Badge>
                 </TableCell>
-                <TableCell>
-                  <div className="flex justify-end gap-1">
+                <TableCell className={ACTION_COLUMN_CLASS}>
+                  <div className="flex justify-end gap-1.5">
                     <Link
+                      aria-label="编辑"
                       className={cn(
-                        buttonVariants({ size: "sm", variant: "ghost" })
+                        buttonVariants({ size: "sm", variant: "secondary" }),
+                        ACTION_BUTTON_CLASS
                       )}
                       params={{ category, id: String(item.id) }}
+                      title="编辑"
                       to="/admin/$category/$id"
                     >
-                      编辑
+                      <PencilIcon />
+                      <span className={ACTION_LABEL_CLASS}>编辑</span>
                     </Link>
                     <ToggleButton item={item} onToggle={toggle} />
                   </div>
