@@ -14,6 +14,12 @@
     }
   ],
   "keep_vars": true,
+  "observability": {
+    "logs": {
+      "enabled": true,
+      "invocation_logs": true
+    }
+  },
   "assets": {
     "directory": "./dist/client",
     "html_handling": "drop-trailing-slash"
