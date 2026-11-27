@@ -1,6 +1,6 @@
 # cyber-shot
 
-人物写真素材库。提供发型、身材、动作三类素材，每条素材带预览图和中英文提示词，供用户浏览、复制提示词、下载参考图。本站不生成图片，也不提供登录、收费和搭配功能。
+人物写真素材库。提供发型、身材、动作三类素材，每条素材带预览图和中英文提示词，供用户浏览、复制提示词、下载参考图。前台无需登录；素材后台使用 Clerk 登录，仅管理员可访问。本站不生成图片，也不提供收费和搭配功能。
 
 基于 TanStack Start、Rsbuild、React、TypeScript、Tailwind CSS v4 和 shadcn。由 Cloudflare Workers 在请求时渲染页面并运行服务端函数，图片和前端资源由 Workers Static Assets 提供。
 
@@ -23,9 +23,11 @@ bun run dev
 
 ## 环境变量
 
-| 变量             | 说明                                                                                                                                           |
-| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| `IMAGE_BASE_URL` | 远程素材对象 key 对应的图片域名，如 R2 的 `r2.dev` 地址或自定义域名。该域名需在 Cloudflare 启用 Images Transformations；留空则从站点根路径读取 |
+| 变量                    | 说明                                                                                                                                           |
+| ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `IMAGE_BASE_URL`        | 远程素材对象 key 对应的图片域名，如 R2 的 `r2.dev` 地址或自定义域名。该域名需在 Cloudflare 启用 Images Transformations；留空则从站点根路径读取 |
+| `CLERK_PUBLISHABLE_KEY` | Clerk Publishable Key，开发使用 `pk_test_`，生产使用 `pk_live_`                                                                                |
+| `CLERK_SECRET_KEY`      | 同一 Clerk 实例的 Secret Key，仅供服务端使用，生产通过 Worker secret 设置                                                                      |
 
 ### 管理方式
 
@@ -34,13 +36,37 @@ bun run dev
 - 新增变量时：在 `src/lib/env.ts` 的 schema 中加一行，业务代码统一通过 `getEnv()` 读取；修改 `wrangler.jsonc` 后运行 `bun run cf-typegen` 更新 `worker-configuration.d.ts`。
 - 每个变量只选一个来源，避免同时在控制台和 `wrangler.jsonc` 中配置。
 
+### Clerk 与后台权限
+
+使用独立的 `cyber-shot` Clerk 应用。开发实例已设为 **Public** 注册模式，允许用户自行注册；登录方式由 Clerk 控制台管理，管理员与普通用户使用同一登录流程。新注册用户默认没有后台权限，需要另行授予管理员角色。
+
+首次配置：
+
+1. 复制 `.env.example` 为 `.env`，填写同一开发实例的两个 Clerk key。已安装 Clerk CLI 时，也可以执行 `clerk link --app <application_id>` 和 `clerk env pull --file .env`。
+2. 先注册账号，再在 Clerk 控制台的 **Users** 中找到该用户，将 **Public metadata** 设置为 `{"role":"admin"}`。也可以在控制台手动创建账号。不要写入 Unsafe metadata；普通用户不设置 `role`。
+3. 启动或重启 `bun run dev`，访问 `/admin`，通过站内 `/sign-in` 页面登录。已有账号但没有 `admin` 角色时会返回首页并提示无权限。
+
+`src/start.ts` 注册 Clerk 请求中间件并保留服务端函数的 CSRF 检查。`CLERK_PUBLISHABLE_KEY` 在服务端运行时读取，通过 Clerk 的 SSR 初始状态传给 `ClerkProvider`，无需构建工具的环境变量前缀；Secret Key 不进入客户端构建产物。
+
+`/admin` 的 `beforeLoad` 检查访问资格；每个后台服务端函数还通过 `adminMiddleware` 独立鉴权，覆盖读取、上传、新建、修改、上下架。每次权限检查都从 Clerk 获取用户当前的 `publicMetadata.role`，不缓存角色，也不使用 session claims 或客户端传入的角色授权。移除角色后的下一次检查即拒绝访问；Clerk 查询失败时不放行。已开始执行的操作和已下载的数据不受撤权追回。管理员账号被封禁或锁定时同样拒绝访问。
+
+主站 Header 提供登录按钮，使用 Clerk 弹窗登录或注册后返回当前页面；登录后显示头像，点击可管理账户或退出登录。后台侧栏也提供账户菜单，无权限提示中可切换账号。前台浏览、复制提示词和图片访问仍公开。
+
+验证权限逻辑与安全回跳：
+
+```bash
+bun test src/lib/admin/auth.test.ts
+```
+
+真实登录验收：未登录打开后台应跳到登录页并保留原路径；新注册的普通用户登录后回到首页；管理员能打开后台；保持会话登录、在 Clerk 控制台移除角色后，刷新后台或进行下一次操作应被拒绝。首个管理员角色由项目维护者在 Clerk 控制台授予。
+
 ## 素材数据
 
 动作参考图的生成、服装分界清理、验收与入库流程见 [动作参考图生成与入库流程](docs/pose-reference-workflow.md)。下次可将图片与该文档一起提供，按相同流程处理。
 
 发型、身材、动作三类素材存放在 Cloudflare D1（绑定名 `DB`）的 `catalog_items` 表中，用 `category`（`hair`、`body`、`pose`）区分类别，表结构定义在 `src/db/schema.ts`，迁移文件在 `drizzle/`。`content/` 下只保留 `faces.json` 和 `hairstyles-generation.json`：前者的面貌模块暂不启用，后者是生图用的模板数据，站点都不读取。
 
-素材由后台维护（开发中），在此之前直接用 `wrangler d1 execute` 或 Cloudflare 控制台修改。写入没有应用层校验，只有表上的 CHECK 和 NOT NULL 约束兜底。
+素材由 `/admin` 后台维护，后台写入经过权限与数据校验。也可以直接用 `wrangler d1 execute` 或 Cloudflare 控制台修改；直接写库会绕过应用层校验，仅由表上的 CHECK 和 NOT NULL 约束兜底。
 
 `catalog_items` 的主要字段：
 
@@ -64,6 +90,8 @@ bun run dev
 - `/`：落地页，由 `index.tsx` 定义，`loadHome` 只取各类别条目数、精选条目和常用标签；精选 id 写在 `src/lib/catalog/home.functions.ts`。
 - `/hair`、`/pose`：发型库和姿势库，由 `_catalog/hair.tsx`、`_catalog/pose.tsx` 定义，与弹窗共享 `_catalog/route.tsx` 提供的无路径布局。筛选条件保存在 `g`（性别）、`q`（搜索）、`t`（标签）参数中，姿势页不显示性别筛选。
 - `/$category/$id`：由 `$category/$id.tsx` 定义，Worker 在请求时渲染详情；不存在的素材返回 404。
+- `/admin` 及其子页面：素材后台，仅 `publicMetadata.role === "admin"` 的用户可访问。
+- `/sign-in` 及其子路径：Clerk 官方登录组件，成功后仅允许回跳到本站后台路径。
 - 在 `/hair`、`/pose` 点击素材时，TanStack Router 通过路由掩码显示弹窗，地址栏仍使用独立详情页的地址。直接访问或刷新时打开独立页，关闭弹窗或后退会恢复列表筛选。
 
 ## 内容规范
@@ -103,3 +131,9 @@ bun x shadcn add button
 运行 `bun run build` 生成 `dist/client`（静态资源）和 `dist/server`（SSR）。`wrangler.jsonc` 将未匹配静态资源的请求交给 `worker.mjs`，再由 TanStack Start 处理页面、服务端函数和服务端路由。首次发布前用 `bun x wrangler login` 登录，确认 Worker 名称后运行 `bun run deploy`。
 
 本地用 `bun run start` 验证 Worker；只检查发布打包、不上传时，可在构建后执行 `bun x wrangler deploy --dry-run`。
+
+首次发布 Clerk 接入前，在 `cyber-shot` 应用中配置生产实例和 Clerk 要求的域名/DNS；将站内登录地址设为 `https://cyber-shot.tuntun.site/sign-in`，并确认生产实例也采用 **Public** 注册模式。生产实例的用户与开发实例独立，需要另行注册账号并设置 Public metadata 中的 `role`。
+
+生产 `CLERK_PUBLISHABLE_KEY` 配置在 `wrangler.jsonc` 的 `vars` 中，对应的 `CLERK_SECRET_KEY` 通过 Worker secret 保存。更换密钥时运行 `bun x wrangler secret put CLERK_SECRET_KEY`，再执行 `bun run cf-typegen`、构建与部署。不要混用开发和生产实例的密钥。
+
+Google 登录使用 Clerk Production 实例中的自定义 OAuth 凭据，回调地址为 `https://clerk.cyber-shot.tuntun.site/v1/oauth_callback`。公开隐私政策位于 `/privacy`，可从网站页脚访问。

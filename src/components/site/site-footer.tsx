@@ -18,6 +18,12 @@ export function SiteFooter() {
           >
             姿势库
           </Link>
+          <Link
+            className="can-hover:hover:text-foreground transition-colors"
+            to="/privacy"
+          >
+            隐私政策
+          </Link>
         </nav>
       </div>
     </footer>

@@ -1,7 +1,9 @@
+import { UserButton } from "@clerk/tanstack-react-start";
 import {
   createFileRoute,
   Link,
   Outlet,
+  redirect,
   useLocation,
 } from "@tanstack/react-router";
 import type { LucideIcon } from "lucide-react";
@@ -29,10 +31,21 @@ import {
   SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { ADMIN_FORBIDDEN_HREF, getSignInHref } from "@/lib/admin/access";
+import { loadAdminAccess } from "@/lib/admin/auth.functions";
 import type { Category } from "@/lib/catalog/view";
 import { CATEGORY_LABELS, CATEGORY_ORDER } from "@/lib/catalog/view";
 
 export const Route = createFileRoute("/admin")({
+  beforeLoad: async ({ location }) => {
+    const access = await loadAdminAccess();
+    if (access === "signed-out") {
+      throw redirect({ href: getSignInHref(location.href) });
+    }
+    if (access === "forbidden") {
+      throw redirect({ href: ADMIN_FORBIDDEN_HREF });
+    }
+  },
   component: AdminLayout,
   head: () => ({
     meta: [
@@ -127,6 +140,12 @@ function AdminLayout() {
           </SidebarGroup>
         </SidebarContent>
         <SidebarFooter>
+          <div className="flex items-center gap-2 px-2 py-1">
+            <UserButton />
+            <span className="text-muted-foreground text-xs group-data-[collapsible=icon]:hidden">
+              管理员
+            </span>
+          </div>
           <SidebarMenu>
             <SidebarMenuItem>
               <SidebarMenuButton render={<Link to="/" />} tooltip="返回前台">

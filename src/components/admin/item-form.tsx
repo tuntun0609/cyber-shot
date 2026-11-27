@@ -1,4 +1,5 @@
 import { useRouter } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { PlusIcon } from "lucide-react";
 import type { ChangeEvent } from "react";
 import { useCallback, useMemo, useState } from "react";
@@ -103,6 +104,8 @@ export function ItemForm({
   tagSuggestions: string[];
 }) {
   const router = useRouter();
+  const create = useServerFn(createItem);
+  const update = useServerFn(updateItem);
   const [gender, setGender] = useState<Gender>(initial?.gender ?? "any");
   const [name, setName] = useState(initial?.name ?? "");
   const [promptZh, setPromptZh] = useState(initial?.promptZh ?? "");
@@ -186,9 +189,12 @@ export function ItemForm({
     }
     setSaving(true);
     try {
-      await (initial
-        ? updateItem({ data: parsed.data })
-        : createItem({ data: parsed.data }));
+      const saved = await (initial
+        ? update({ data: parsed.data })
+        : create({ data: parsed.data }));
+      if (!saved) {
+        return;
+      }
       toast.success("已保存");
       await router.invalidate();
       await router.navigate({
@@ -203,6 +209,7 @@ export function ItemForm({
     }
   }, [
     category,
+    create,
     gender,
     image,
     initial,
@@ -212,6 +219,7 @@ export function ItemForm({
     router,
     skeleton,
     tags,
+    update,
   ]);
 
   const showSkeleton = category === "pose";

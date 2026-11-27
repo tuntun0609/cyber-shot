@@ -5,7 +5,8 @@
   "compatibility_date": "2026-11-01",
   "compatibility_flags": ["nodejs_compat"],
   "vars": {
-    "IMAGE_BASE_URL": "https://oss.tuntun.site"
+    "IMAGE_BASE_URL": "https://oss.tuntun.site",
+    "CLERK_PUBLISHABLE_KEY": "pk_live_Y2xlcmsuY3liZXItc2hvdC50dW50dW4uc2l0ZSQ"
   },
   "routes": [
     {

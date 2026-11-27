@@ -1,3 +1,6 @@
+import { zhCN } from "@clerk/localizations";
+import { ClerkProvider } from "@clerk/tanstack-react-start";
+import { shadcn } from "@clerk/ui/themes";
 import {
   createRootRoute,
   HeadContent,
@@ -72,8 +75,15 @@ function RootDocument({ children }: { children: ReactNode }) {
           disableTransitionOnChange
           enableSystem
         >
-          {children}
-          <Toaster position="bottom-center" />
+          <ClerkProvider
+            appearance={{ theme: shadcn }}
+            localization={zhCN}
+            signInFallbackRedirectUrl="/admin"
+            signInUrl="/sign-in"
+          >
+            {children}
+            <Toaster position="bottom-center" />
+          </ClerkProvider>
         </ThemeProvider>
         <Scripts />
       </body>

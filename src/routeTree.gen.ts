@@ -12,12 +12,14 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CatalogRouteRouteImport } from './routes/_catalog/route'
 import { Route as AdminRouteRouteImport } from './routes/admin/route'
+import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as CategoryIdRouteImport } from './routes/$category/$id'
 import { Route as CatalogHairRouteImport } from './routes/_catalog/hair'
 import { Route as CatalogPoseRouteImport } from './routes/_catalog/pose'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as AdminCategoryRouteRouteImport } from './routes/admin/$category/route'
 import { Route as CyberShotSplatRouteImport } from './routes/cyber-shot.$'
+import { Route as SignInSplatRouteImport } from './routes/sign-in.$'
 import { Route as AdminCategoryIndexRouteImport } from './routes/admin/$category/index'
 import { Route as AdminCategoryIdRouteImport } from './routes/admin/$category/$id'
 import { Route as AdminCategoryNewRouteImport } from './routes/admin/$category/new'
@@ -35,6 +37,11 @@ const CatalogRouteRoute = CatalogRouteRouteImport.update({
 const AdminRouteRoute = AdminRouteRouteImport.update({
   id: '/admin',
   path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CategoryIdRoute = CategoryIdRouteImport.update({
@@ -67,6 +74,11 @@ const CyberShotSplatRoute = CyberShotSplatRouteImport.update({
   path: '/cyber-shot/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SignInSplatRoute = SignInSplatRouteImport.update({
+  id: '/sign-in/$',
+  path: '/sign-in/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminCategoryIndexRoute = AdminCategoryIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -92,11 +104,13 @@ const CatalogCatalogModalCategoryIdRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteRouteWithChildren
+  '/privacy': typeof PrivacyRoute
   '/admin/$category': typeof AdminCategoryRouteRouteWithChildren
   '/$category/$id': typeof CategoryIdRoute
   '/hair': typeof CatalogHairRoute
   '/pose': typeof CatalogPoseRoute
   '/cyber-shot/$': typeof CyberShotSplatRoute
+  '/sign-in/$': typeof SignInSplatRoute
   '/admin/': typeof AdminIndexRoute
   '/admin/$category/$id': typeof AdminCategoryIdRoute
   '/admin/$category/new': typeof AdminCategoryNewRoute
@@ -105,10 +119,12 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/privacy': typeof PrivacyRoute
   '/$category/$id': typeof CategoryIdRoute
   '/hair': typeof CatalogHairRoute
   '/pose': typeof CatalogPoseRoute
   '/cyber-shot/$': typeof CyberShotSplatRoute
+  '/sign-in/$': typeof SignInSplatRoute
   '/admin': typeof AdminIndexRoute
   '/admin/$category/$id': typeof AdminCategoryIdRoute
   '/admin/$category/new': typeof AdminCategoryNewRoute
@@ -120,11 +136,13 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_catalog': typeof CatalogRouteRouteWithChildren
   '/admin': typeof AdminRouteRouteWithChildren
+  '/privacy': typeof PrivacyRoute
   '/admin/$category': typeof AdminCategoryRouteRouteWithChildren
   '/$category/$id': typeof CategoryIdRoute
   '/_catalog/hair': typeof CatalogHairRoute
   '/_catalog/pose': typeof CatalogPoseRoute
   '/cyber-shot/$': typeof CyberShotSplatRoute
+  '/sign-in/$': typeof SignInSplatRoute
   '/admin/': typeof AdminIndexRoute
   '/admin/$category/$id': typeof AdminCategoryIdRoute
   '/admin/$category/new': typeof AdminCategoryNewRoute
@@ -136,11 +154,13 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/admin'
+    | '/privacy'
     | '/admin/$category'
     | '/$category/$id'
     | '/hair'
     | '/pose'
     | '/cyber-shot/$'
+    | '/sign-in/$'
     | '/admin/'
     | '/admin/$category/$id'
     | '/admin/$category/new'
@@ -149,10 +169,12 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/privacy'
     | '/$category/$id'
     | '/hair'
     | '/pose'
     | '/cyber-shot/$'
+    | '/sign-in/$'
     | '/admin'
     | '/admin/$category/$id'
     | '/admin/$category/new'
@@ -163,11 +185,13 @@ export interface FileRouteTypes {
     | '/'
     | '/_catalog'
     | '/admin'
+    | '/privacy'
     | '/admin/$category'
     | '/$category/$id'
     | '/_catalog/hair'
     | '/_catalog/pose'
     | '/cyber-shot/$'
+    | '/sign-in/$'
     | '/admin/'
     | '/admin/$category/$id'
     | '/admin/$category/new'
@@ -179,8 +203,10 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CatalogRouteRoute: typeof CatalogRouteRouteWithChildren
   AdminRouteRoute: typeof AdminRouteRouteWithChildren
+  PrivacyRoute: typeof PrivacyRoute
   CategoryIdRoute: typeof CategoryIdRoute
   CyberShotSplatRoute: typeof CyberShotSplatRoute
+  SignInSplatRoute: typeof SignInSplatRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -204,6 +230,13 @@ declare module '@tanstack/react-router' {
       path: '/admin'
       fullPath: '/admin'
       preLoaderRoute: typeof AdminRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/$category/$id': {
@@ -246,6 +279,13 @@ declare module '@tanstack/react-router' {
       path: '/cyber-shot/$'
       fullPath: '/cyber-shot/$'
       preLoaderRoute: typeof CyberShotSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sign-in/$': {
+      id: '/sign-in/$'
+      path: '/sign-in/$'
+      fullPath: '/sign-in/$'
+      preLoaderRoute: typeof SignInSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/$category/': {
@@ -328,18 +368,21 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CatalogRouteRoute: CatalogRouteRouteWithChildren,
   AdminRouteRoute: AdminRouteRouteWithChildren,
+  PrivacyRoute: PrivacyRoute,
   CategoryIdRoute: CategoryIdRoute,
   CyberShotSplatRoute: CyberShotSplatRoute,
+  SignInSplatRoute: SignInSplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
 
 import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
+import type { startInstance } from './start.ts'
 declare module '@tanstack/react-start' {
   interface Register {
     ssr: true
     router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
   }
 }

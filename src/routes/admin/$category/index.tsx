@@ -1,4 +1,5 @@
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import {
   EyeIcon,
   EyeOffIcon,
@@ -115,6 +116,7 @@ function AdminCatalogList() {
   const { category } = Route.useRouteContext();
   const navigate = Route.useNavigate();
   const router = useRouter();
+  const changeDeprecated = useServerFn(setDeprecated);
   const status: StatusFilter = isStatusFilter(search.s) ? search.s : "all";
   const visible = useMemo(
     () => items.filter((item) => matches(item, category, search, status)),
@@ -145,16 +147,19 @@ function AdminCatalogList() {
   const toggle = useCallback(
     async (item: ItemView) => {
       try {
-        await setDeprecated({
+        const changed = await changeDeprecated({
           data: { deprecated: !item.deprecated, id: item.id },
         });
+        if (!changed) {
+          return;
+        }
         toast.success(item.deprecated ? "已恢复上架" : "已下架");
         await router.invalidate();
       } catch (error) {
         toast.error(error instanceof Error ? error.message : "操作失败");
       }
     },
-    [router]
+    [changeDeprecated, router]
   );
 
   const total = items.filter((item) => item.category === category).length;

@@ -1,3 +1,4 @@
+import { useServerFn } from "@tanstack/react-start";
 import { ImageIcon } from "lucide-react";
 import type { ChangeEvent } from "react";
 import { useCallback, useState } from "react";
@@ -47,6 +48,7 @@ export function ImageField({
     number | undefined
   >();
   const [busy, setBusy] = useState(false);
+  const upload = useServerFn(uploadImage);
 
   const handleFile = useCallback(
     async (file: File | undefined) => {
@@ -58,7 +60,11 @@ export function ImageField({
         const aspectRatio = await readAspectRatio(file);
         const body = new FormData();
         body.set("file", file);
-        const { key } = await uploadImage({ data: body });
+        const uploaded = await upload({ data: body });
+        if (!uploaded) {
+          return;
+        }
+        const { key } = uploaded;
         const previewUrl = URL.createObjectURL(file);
         setPreview(previewUrl);
         setPreviewAspectRatio(aspectRatio);
@@ -69,7 +75,7 @@ export function ImageField({
         setBusy(false);
       }
     },
-    [onUploaded]
+    [onUploaded, upload]
   );
 
   const handleChange = useCallback(
