@@ -1,10 +1,13 @@
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
+import { PlusIcon, SearchIcon } from "lucide-react";
 import type { ChangeEvent } from "react";
 import { useCallback, useMemo } from "react";
 import { toast } from "sonner";
+import { AdminPageHeader } from "@/components/admin/page-header";
 import { ItemImage } from "@/components/catalog/item-image";
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -29,7 +32,7 @@ import {
   validateAdminSearch,
 } from "@/lib/admin/search";
 import type { Category, ItemView } from "@/lib/catalog/view";
-import { GENDER_LABELS } from "@/lib/catalog/view";
+import { CATEGORY_LABELS, GENDER_LABELS } from "@/lib/catalog/view";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/admin/$category/")({
@@ -130,15 +133,43 @@ function AdminCatalogList() {
     [router]
   );
 
+  const total = items.filter((item) => item.category === category).length;
   return (
-    <div className="grid gap-4">
+    <div className="grid gap-6">
+      <AdminPageHeader
+        actions={
+          <Link
+            className={cn(buttonVariants())}
+            params={{ category }}
+            to="/admin/$category/new"
+          >
+            <PlusIcon />
+            新增素材
+          </Link>
+        }
+        description={
+          <>
+            共 <span className="tabular-nums">{visible.length}</span> 条
+            {visible.length === total ? null : (
+              <>
+                （全部 <span className="tabular-nums">{total}</span> 条）
+              </>
+            )}
+          </>
+        }
+        title={`${CATEGORY_LABELS[category]}素材`}
+      />
       <div className="flex flex-wrap items-center gap-2">
-        <Input
-          className="w-56"
-          onChange={handleQuery}
-          placeholder="搜索名称、提示词、标签"
-          value={search.q ?? ""}
-        />
+        <div className="relative w-full sm:w-64">
+          <SearchIcon className="text-muted-foreground pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2" />
+          <Input
+            className="pl-8"
+            onChange={handleQuery}
+            placeholder="搜索名称、提示词、标签"
+            type="search"
+            value={search.q ?? ""}
+          />
+        </div>
         <Select
           items={GENDER_ITEMS}
           onValueChange={handleGender}
@@ -171,78 +202,111 @@ function AdminCatalogList() {
             ))}
           </SelectContent>
         </Select>
-        <span className="text-muted-foreground text-sm">
-          共 {visible.length} 条
-        </span>
-        <Link
-          className={cn(buttonVariants({ size: "sm" }), "ml-auto")}
-          params={{ category }}
-          to="/admin/$category/new"
-        >
-          新增素材
-        </Link>
       </div>
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead className="w-16">图片</TableHead>
-            <TableHead>名称</TableHead>
-            <TableHead>性别</TableHead>
-            <TableHead>标签</TableHead>
-            <TableHead>状态</TableHead>
-            <TableHead className="text-right">操作</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {visible.map((item) => (
-            <TableRow key={`${item.category}-${item.id}`}>
-              <TableCell>
-                <div className="bg-muted relative size-12 overflow-hidden rounded-lg">
-                  <ItemImage
-                    alt={item.name}
-                    aspectRatio={1}
-                    sizes="48px"
-                    src={item.thumbSrc}
-                  />
-                </div>
-              </TableCell>
-              <TableCell>
-                <Link
-                  className="font-medium hover:underline"
-                  params={{ category, id: String(item.id) }}
-                  to="/admin/$category/$id"
-                >
-                  {item.name}
-                </Link>
-                <div className="text-muted-foreground text-xs">#{item.id}</div>
-              </TableCell>
-              <TableCell>{GENDER_LABELS[item.gender]}</TableCell>
-              <TableCell>
-                <div className="flex flex-wrap gap-1">
-                  {item.tags.map((tag) => (
-                    <Badge key={tag} variant="secondary">
-                      {tag}
-                    </Badge>
-                  ))}
-                </div>
-              </TableCell>
-              <TableCell>
-                <Badge variant={item.deprecated ? "outline" : "default"}>
-                  {item.deprecated ? "已下架" : "上架中"}
-                </Badge>
-              </TableCell>
-              <TableCell className="text-right">
-                <ToggleButton item={item} onToggle={toggle} />
-              </TableCell>
+      <Card className="gap-0 py-0">
+        <Table className="[&_td:first-child]:pl-4 [&_td:last-child]:pr-4 [&_th:first-child]:pl-4 [&_th:last-child]:pr-4">
+          <TableHeader>
+            <TableRow>
+              <TableHead className="text-muted-foreground w-16 text-xs">
+                图片
+              </TableHead>
+              <TableHead className="text-muted-foreground text-xs">
+                名称
+              </TableHead>
+              <TableHead className="text-muted-foreground text-xs">
+                性别
+              </TableHead>
+              <TableHead className="text-muted-foreground text-xs">
+                标签
+              </TableHead>
+              <TableHead className="text-muted-foreground text-xs">
+                状态
+              </TableHead>
+              <TableHead className="text-muted-foreground text-right text-xs">
+                操作
+              </TableHead>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-      {visible.length === 0 && (
-        <p className="text-muted-foreground py-8 text-center text-sm">
-          没有符合条件的素材
-        </p>
-      )}
+          </TableHeader>
+          <TableBody>
+            {visible.map((item) => (
+              <TableRow
+                className={cn(item.deprecated && "text-muted-foreground")}
+                key={`${item.category}-${item.id}`}
+              >
+                <TableCell>
+                  <div
+                    className={cn(
+                      "bg-muted ring-foreground/8 dark:ring-foreground/10 relative size-12 overflow-hidden rounded-2xl ring-1",
+                      item.deprecated && "opacity-60"
+                    )}
+                  >
+                    <ItemImage
+                      alt={item.name}
+                      aspectRatio={1}
+                      sizes="48px"
+                      src={item.thumbSrc}
+                    />
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <Link
+                    className="font-medium hover:underline"
+                    params={{ category, id: String(item.id) }}
+                    to="/admin/$category/$id"
+                  >
+                    {item.name}
+                  </Link>
+                  <div className="text-muted-foreground text-xs tabular-nums">
+                    #{item.id}
+                  </div>
+                </TableCell>
+                <TableCell>{GENDER_LABELS[item.gender]}</TableCell>
+                <TableCell>
+                  <div className="flex flex-wrap gap-1">
+                    {item.tags.map((tag) => (
+                      <Badge key={tag} variant="secondary">
+                        {tag}
+                      </Badge>
+                    ))}
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <Badge
+                    className={cn(item.deprecated && "text-muted-foreground")}
+                    variant={item.deprecated ? "outline" : "secondary"}
+                  >
+                    {item.deprecated ? "已下架" : "上架中"}
+                  </Badge>
+                </TableCell>
+                <TableCell>
+                  <div className="flex justify-end gap-1">
+                    <Link
+                      className={cn(
+                        buttonVariants({ size: "sm", variant: "ghost" })
+                      )}
+                      params={{ category, id: String(item.id) }}
+                      to="/admin/$category/$id"
+                    >
+                      编辑
+                    </Link>
+                    <ToggleButton item={item} onToggle={toggle} />
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+            {visible.length === 0 && (
+              <TableRow className="hover:bg-transparent">
+                <TableCell
+                  className="text-muted-foreground h-32 text-center"
+                  colSpan={6}
+                >
+                  没有符合条件的素材
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </Card>
     </div>
   );
 }

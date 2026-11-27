@@ -127,7 +127,7 @@ function PromptCard({ item }: { item: ItemView }) {
         <p
           className={cn(
             "leading-relaxed",
-            lang.value === "en" ? "font-mono text-[15px]" : "text-base"
+            lang.value === "en" ? "text-[15px]" : "text-base"
           )}
           lang={lang.value === "en" ? "en" : "zh-CN"}
         >
@@ -168,7 +168,7 @@ export function ItemDetail({ item }: { item: ItemView }) {
         ) : null}
 
         <div className="grid gap-1.5">
-          <p className="text-muted-foreground font-mono text-xs tracking-wide">
+          <p className="text-muted-foreground text-xs tracking-wide">
             {CATEGORY_LABELS[item.category]} / #{item.id}
           </p>
           <h1 className="text-3xl font-semibold tracking-tight text-balance">

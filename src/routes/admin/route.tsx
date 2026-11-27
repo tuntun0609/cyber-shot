@@ -5,7 +5,12 @@ import {
   useLocation,
 } from "@tanstack/react-router";
 import type { LucideIcon } from "lucide-react";
-import { PersonStandingIcon, ScissorsIcon, ShirtIcon } from "lucide-react";
+import {
+  ArrowLeftIcon,
+  PersonStandingIcon,
+  ScissorsIcon,
+  ShirtIcon,
+} from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -65,8 +70,25 @@ function AdminLayout() {
   return (
     <SidebarProvider>
       <Sidebar>
-        <SidebarHeader className="px-4 py-3 font-semibold">
-          cyber-shot 素材后台
+        <SidebarHeader className="p-3">
+          <Link
+            className="flex items-center gap-2 rounded-xl px-2 py-1.5"
+            to="/"
+          >
+            <img
+              alt=""
+              className="size-7 shrink-0"
+              height={28}
+              src="/logo.svg"
+              width={28}
+            />
+            <div className="grid leading-tight">
+              <span className="font-heading font-semibold tracking-tight">
+                cyber-shot
+              </span>
+              <span className="text-muted-foreground text-xs">素材后台</span>
+            </div>
+          </Link>
         </SidebarHeader>
         <SidebarContent>
           <SidebarGroup>
@@ -84,19 +106,29 @@ function AdminLayout() {
           <SidebarMenu>
             <SidebarMenuItem>
               <SidebarMenuButton render={<Link to="/" />}>
-                返回前台
+                <ArrowLeftIcon />
+                <span>返回前台</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarFooter>
       </Sidebar>
       <SidebarInset>
-        <header className="flex h-12 items-center gap-2 border-b px-4 md:hidden">
+        <header className="bg-background/85 sticky top-0 z-20 flex h-12 items-center gap-2 border-b px-4 backdrop-blur-md md:hidden">
           <SidebarTrigger />
+          <img
+            alt=""
+            className="size-6 shrink-0"
+            height={24}
+            src="/logo.svg"
+            width={24}
+          />
           <span className="text-sm font-medium">素材后台</span>
         </header>
         <main className="min-w-0 p-4 sm:p-6">
-          <Outlet />
+          <div className="mx-auto grid w-full max-w-6xl gap-6">
+            <Outlet />
+          </div>
         </main>
       </SidebarInset>
     </SidebarProvider>

@@ -111,7 +111,7 @@ function TagOption({
       <Label className="flex-1 cursor-pointer py-2 font-normal" htmlFor={id}>
         {value}
       </Label>
-      <span className="text-muted-foreground font-mono text-xs tabular-nums">
+      <span className="text-muted-foreground text-xs tabular-nums">
         {count}
       </span>
     </div>
@@ -513,7 +513,7 @@ export function CatalogBrowser({
             </h1>
             <p aria-live="polite" className="text-muted-foreground text-sm">
               共{" "}
-              <span className="text-foreground font-mono tabular-nums">
+              <span className="text-foreground tabular-nums">
                 {visible.length}
               </span>{" "}
               项

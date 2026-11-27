@@ -56,7 +56,7 @@ function EntryCard({
 }) {
   return (
     <Link
-      className="bg-card can-hover:hover:ring-foreground/20 can-hover:hover:-translate-y-0.5 ring-foreground/10 grid content-start gap-5 rounded-2xl p-5 ring-1 transition duration-200"
+      className="bg-card can-hover:hover:ring-foreground/20 can-hover:hover:-translate-y-0.5 ring-foreground/8 grid content-start gap-5 rounded-3xl p-5 ring-1 transition duration-200"
       to={to}
     >
       <ul className="grid grid-cols-4 gap-2">
@@ -84,7 +84,7 @@ function EntryCard({
       </ul>
       <div className="flex items-baseline justify-between gap-4">
         <h2 className="text-xl font-semibold tracking-tight">{title}</h2>
-        <span className="text-muted-foreground font-mono text-xs tabular-nums">
+        <span className="text-muted-foreground text-xs tabular-nums">
           {section.count} 款
         </span>
       </div>
@@ -168,10 +168,10 @@ export function HomePage({ data }: { data: HomeData }) {
           <ul className="grid gap-5 md:grid-cols-3">
             {FEATURES.map(({ description, icon: Icon, title }) => (
               <li
-                className="bg-card ring-foreground/10 rounded-xl p-5 ring-1"
+                className="bg-card ring-foreground/8 rounded-3xl p-5 ring-1"
                 key={title}
               >
-                <span className="bg-primary text-primary-foreground mb-3 grid size-9 place-items-center rounded-lg">
+                <span className="bg-primary text-primary-foreground mb-3 grid size-9 place-items-center rounded-full">
                   <Icon className="size-4" />
                 </span>
                 <h3 className="mb-1 font-medium">{title}</h3>

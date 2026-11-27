@@ -1,3 +1,4 @@
+import { ImageIcon } from "lucide-react";
 import type { ChangeEvent } from "react";
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
@@ -73,15 +74,22 @@ export function ImageField({
   return (
     <div className="grid gap-2">
       <Label htmlFor={id}>{label}</Label>
-      {src ? (
-        <img
-          alt={label}
-          className="max-h-48 w-fit rounded-xl border object-contain"
-          height={192}
-          src={src}
-          width={192}
-        />
-      ) : null}
+      <div className="bg-muted ring-foreground/8 dark:ring-foreground/10 flex aspect-square w-full max-w-48 items-center justify-center overflow-hidden rounded-2xl ring-1">
+        {src ? (
+          <img
+            alt={label}
+            className="size-full object-contain"
+            height={192}
+            src={src}
+            width={192}
+          />
+        ) : (
+          <div className="flex flex-col items-center gap-1">
+            <ImageIcon className="text-muted-foreground size-6" />
+            <span className="text-muted-foreground text-xs">暂无图片</span>
+          </div>
+        )}
+      </div>
       <Input
         accept="image/png,image/jpeg,image/webp"
         disabled={busy}

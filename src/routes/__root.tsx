@@ -30,7 +30,19 @@ export const Route = createRootRoute({
       { content: "zh_CN", property: "og:locale" },
       { content: "summary", name: "twitter:card" },
     ],
-    links: [{ href: "/logo.svg", rel: "icon", type: "image/svg+xml" }],
+    links: [
+      { href: "/logo.svg", rel: "icon", type: "image/svg+xml" },
+      { href: "https://fonts.googleapis.com", rel: "preconnect" },
+      {
+        crossOrigin: "anonymous",
+        href: "https://fonts.gstatic.com",
+        rel: "preconnect",
+      },
+      {
+        href: "https://fonts.googleapis.com/css2?family=Inter:wght@400..700&family=Plus+Jakarta+Sans:wght@500;600;700&display=swap",
+        rel: "stylesheet",
+      },
+    ],
   }),
   notFoundComponent: NotFoundPage,
   shellComponent: RootDocument,

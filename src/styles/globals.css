@@ -9,9 +9,16 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: ui-sans-serif, system-ui, sans-serif;
+  --font-sans:
+    Inter, ui-sans-serif, system-ui, -apple-system, "PingFang SC",
+    "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
+  --font-heading:
+    "Plus Jakarta Sans", Inter, ui-sans-serif, system-ui, -apple-system,
+    "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  /* bencho 的等宽场景也用 UI 字体，数字靠 tabular-nums 对齐 */
   --font-mono:
-    ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+    Inter, ui-sans-serif, system-ui, -apple-system, "PingFang SC",
+    "Microsoft YaHei", sans-serif;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -51,75 +58,75 @@
 }
 
 :root {
-  /* 浅色：白底 + 极淡冷灰分层，主色取自 logo 机身的钴蓝 */
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.2 0.03 265);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.2 0.03 265);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.2 0.03 265);
-  --primary: oklch(0.52 0.16 262);
-  --primary-foreground: oklch(0.99 0.003 265);
-  --secondary: oklch(0.97 0.005 265);
-  --secondary-foreground: oklch(0.28 0.04 265);
-  --muted: oklch(0.975 0.003 265);
-  --muted-foreground: oklch(0.5 0.02 265);
-  --accent: oklch(0.97 0.005 265);
-  --accent-foreground: oklch(0.28 0.04 265);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.93 0.004 265);
-  --input: oklch(0.93 0.004 265);
-  --ring: oklch(0.62 0.12 262);
-  --chart-1: oklch(0.78 0.1 262);
-  --chart-2: oklch(0.65 0.15 262);
-  --chart-3: oklch(0.52 0.16 262);
-  --chart-4: oklch(0.42 0.13 265);
-  --chart-5: oklch(0.3 0.09 265);
-  --radius: 0.875rem;
-  --sidebar: oklch(0.99 0.002 265);
-  --sidebar-foreground: oklch(0.2 0.03 265);
-  --sidebar-primary: oklch(0.52 0.16 262);
-  --sidebar-primary-foreground: oklch(0.99 0.003 265);
-  --sidebar-accent: oklch(0.97 0.005 265);
-  --sidebar-accent-foreground: oklch(0.28 0.04 265);
-  --sidebar-border: oklch(0.93 0.004 265);
-  --sidebar-ring: oklch(0.62 0.12 262);
+  /* 浅色：白底 + 暖灰分层（#f7f7f6 / #f1f1f0 / #ecebe7），近黑墨色 #17181a，实心黑按钮 */
+  --background: #fff;
+  --foreground: #17181a;
+  --card: #f7f7f6;
+  --card-foreground: #17181a;
+  --popover: #fff;
+  --popover-foreground: #17181a;
+  --primary: #0e0f11;
+  --primary-foreground: #f4f3f1;
+  --secondary: #f1f1f0;
+  --secondary-foreground: #3c3b37;
+  --muted: #f1f1f0;
+  --muted-foreground: #6f6e68;
+  --accent: #ecebe7;
+  --accent-foreground: #17181a;
+  --destructive: #e5484d;
+  --border: rgb(23 24 26 / 10%);
+  --input: rgb(23 24 26 / 12%);
+  --ring: #0d99ff;
+  --chart-1: #adaca6;
+  --chart-2: #85847e;
+  --chart-3: #5c5b56;
+  --chart-4: #3c3b37;
+  --chart-5: #17181a;
+  --radius: 0.75rem;
+  --sidebar: #f7f7f6;
+  --sidebar-foreground: #17181a;
+  --sidebar-primary: #0e0f11;
+  --sidebar-primary-foreground: #f4f3f1;
+  --sidebar-accent: #ecebe7;
+  --sidebar-accent-foreground: #17181a;
+  --sidebar-border: rgb(23 24 26 / 10%);
+  --sidebar-ring: #0d99ff;
   color-scheme: light;
 }
 
-/* 暗色：冷蓝灰底，主色提亮的钴蓝，保持低饱和 */
+/* 暗色：纯黑底 #0a0a0a，中性灰层级（#0f0f0f / #181818 / #202020），白色实心按钮 */
 .dark {
-  --background: oklch(0.16 0.02 265);
-  --foreground: oklch(0.96 0.006 265);
-  --card: oklch(0.2 0.022 265);
-  --card-foreground: oklch(0.96 0.006 265);
-  --popover: oklch(0.2 0.022 265);
-  --popover-foreground: oklch(0.96 0.006 265);
-  --primary: oklch(0.72 0.12 260);
-  --primary-foreground: oklch(0.16 0.03 265);
-  --secondary: oklch(0.26 0.025 265);
-  --secondary-foreground: oklch(0.95 0.01 265);
-  --muted: oklch(0.23 0.02 265);
-  --muted-foreground: oklch(0.74 0.03 265);
-  --accent: oklch(0.27 0.03 265);
-  --accent-foreground: oklch(0.95 0.01 265);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0.01 265 / 12%);
-  --input: oklch(1 0.01 265 / 16%);
-  --ring: oklch(0.72 0.11 260);
-  --chart-1: oklch(0.82 0.09 260);
-  --chart-2: oklch(0.72 0.12 260);
-  --chart-3: oklch(0.6 0.15 262);
-  --chart-4: oklch(0.5 0.14 264);
-  --chart-5: oklch(0.4 0.1 265);
-  --sidebar: oklch(0.18 0.022 265);
-  --sidebar-foreground: oklch(0.96 0.006 265);
-  --sidebar-primary: oklch(0.72 0.12 260);
-  --sidebar-primary-foreground: oklch(0.16 0.03 265);
-  --sidebar-accent: oklch(0.27 0.03 265);
-  --sidebar-accent-foreground: oklch(0.95 0.01 265);
-  --sidebar-border: oklch(1 0.01 265 / 12%);
-  --sidebar-ring: oklch(0.72 0.11 260);
+  --background: #0a0a0a;
+  --foreground: #fff;
+  --card: #0f0f0f;
+  --card-foreground: #fff;
+  --popover: #181818;
+  --popover-foreground: #fff;
+  --primary: #fff;
+  --primary-foreground: #000;
+  --secondary: #181818;
+  --secondary-foreground: #b4b4b4;
+  --muted: #181818;
+  --muted-foreground: #9a9a9a;
+  --accent: #202020;
+  --accent-foreground: #fff;
+  --destructive: #ff6369;
+  --border: rgb(255 255 255 / 10%);
+  --input: rgb(255 255 255 / 14%);
+  --ring: #3aa9ff;
+  --chart-1: #6b6b6b;
+  --chart-2: #828282;
+  --chart-3: #9a9a9a;
+  --chart-4: #b4b4b4;
+  --chart-5: #fff;
+  --sidebar: #0f0f0f;
+  --sidebar-foreground: #fff;
+  --sidebar-primary: #fff;
+  --sidebar-primary-foreground: #000;
+  --sidebar-accent: #202020;
+  --sidebar-accent-foreground: #fff;
+  --sidebar-border: rgb(255 255 255 / 10%);
+  --sidebar-ring: #3aa9ff;
   color-scheme: dark;
 }
 
@@ -134,6 +141,14 @@
 
   html {
     @apply font-sans antialiased;
+  }
+
+  /* 标题用 Plus Jakarta Sans，收紧字距，对应 bencho 的 hero 排版 */
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-heading);
+    letter-spacing: -0.02em;
   }
 
   :focus-visible {

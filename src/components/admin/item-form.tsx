@@ -1,4 +1,5 @@
 import { useRouter } from "@tanstack/react-router";
+import { PlusIcon } from "lucide-react";
 import type { ChangeEvent } from "react";
 import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
@@ -6,6 +7,13 @@ import type { UploadedImage } from "@/components/admin/image-field";
 import { ImageField } from "@/components/admin/image-field";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -50,9 +58,14 @@ function TagSuggestion({
 }) {
   const handleClick = useCallback(() => onAdd(tag), [onAdd, tag]);
   return (
-    <button onClick={handleClick} type="button">
-      <Badge variant="outline">+ {tag}</Badge>
-    </button>
+    <Badge
+      className="hover:bg-muted cursor-pointer"
+      render={<button onClick={handleClick} type="button" />}
+      variant="outline"
+    >
+      <PlusIcon />
+      {tag}
+    </Badge>
   );
 }
 
@@ -174,92 +187,138 @@ export function ItemForm({
   ]);
 
   const showSkeleton = category === "pose";
+  const suggestions = tagSuggestions.filter((tag) => !tags.includes(tag));
   return (
-    <div className="grid max-w-2xl gap-5">
-      <div className="grid gap-2">
-        <Label htmlFor="name">名称</Label>
-        <Input id="name" maxLength={50} onChange={handleName} value={name} />
-      </div>
-      <div className="grid gap-2">
-        <Label htmlFor="gender">性别</Label>
-        <Select
-          items={GENDER_LABELS}
-          onValueChange={handleGender}
-          value={gender}
-        >
-          <SelectTrigger id="gender">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {Object.entries(GENDER_LABELS).map(([value, label]) => (
-              <SelectItem key={value} value={value}>
-                {label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-      <div className="grid gap-2">
-        <Label htmlFor="prompt-zh">中文提示词</Label>
-        <Textarea
-          id="prompt-zh"
-          maxLength={1000}
-          onChange={handlePromptZh}
-          value={promptZh}
-        />
-      </div>
-      <div className="grid gap-2">
-        <Label htmlFor="prompt-en">英文提示词</Label>
-        <Textarea
-          id="prompt-en"
-          maxLength={1000}
-          onChange={handlePromptEn}
-          value={promptEn}
-        />
-      </div>
-      <div className="grid gap-2">
-        <Label htmlFor="tags">标签（逗号分隔，最多 10 个）</Label>
-        <Input id="tags" onChange={handleTags} value={tagsText} />
-        <div className="flex flex-wrap gap-1">
-          {tagSuggestions
-            .filter((tag) => !tags.includes(tag))
-            .map((tag) => (
-              <TagSuggestion key={tag} onAdd={addTag} tag={tag} />
-            ))}
-        </div>
-      </div>
-      <ImageField
-        currentSrc={initial?.imageSrc}
-        id="image"
-        label={initial ? "图片（不选则保留原图）" : "图片"}
-        onUploaded={setImage}
-      />
-      {showSkeleton && (
-        <div className="grid gap-2">
-          <ImageField
-            currentSrc={skeleton === null ? undefined : initial?.skeletonSrc}
-            id="skeleton"
-            label="骨架图（可选）"
-            onUploaded={handleSkeletonUploaded}
-          />
-          {initial?.skeletonSrc && skeleton !== null && (
-            <Button
-              className="w-fit"
-              onClick={clearSkeleton}
-              size="sm"
-              variant="outline"
-            >
-              清除骨架图
-            </Button>
-          )}
-        </div>
-      )}
-      <div className="flex gap-2">
-        <Button disabled={saving} onClick={submit}>
-          {saving ? "保存中…" : "保存"}
-        </Button>
+    <div className="grid max-w-3xl gap-5">
+      <Card>
+        <CardHeader>
+          <CardTitle>基本信息</CardTitle>
+          <CardDescription>名称、性别与标签</CardDescription>
+        </CardHeader>
+        <CardContent className="grid gap-5">
+          <div className="grid gap-5 sm:grid-cols-2">
+            <div className="grid gap-2">
+              <Label htmlFor="name">名称</Label>
+              <Input
+                id="name"
+                maxLength={50}
+                onChange={handleName}
+                value={name}
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="gender">性别</Label>
+              <Select
+                items={GENDER_LABELS}
+                onValueChange={handleGender}
+                value={gender}
+              >
+                <SelectTrigger className="w-full" id="gender">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {Object.entries(GENDER_LABELS).map(([value, label]) => (
+                    <SelectItem key={value} value={value}>
+                      {label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <div className="grid gap-2">
+            <Label htmlFor="tags">标签</Label>
+            <Input id="tags" onChange={handleTags} value={tagsText} />
+            <p className="text-muted-foreground text-xs">
+              逗号分隔，最多 10 个
+            </p>
+            {suggestions.length > 0 ? (
+              <div className="grid gap-1.5">
+                <span className="text-muted-foreground text-xs">常用标签</span>
+                <div className="flex flex-wrap gap-1">
+                  {suggestions.map((tag) => (
+                    <TagSuggestion key={tag} onAdd={addTag} tag={tag} />
+                  ))}
+                </div>
+              </div>
+            ) : null}
+          </div>
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader>
+          <CardTitle>提示词</CardTitle>
+          <CardDescription>用于生成的中英文描述</CardDescription>
+        </CardHeader>
+        <CardContent className="grid gap-5">
+          <div className="grid gap-2">
+            <Label htmlFor="prompt-zh">中文提示词</Label>
+            <Textarea
+              className="min-h-28"
+              id="prompt-zh"
+              maxLength={1000}
+              onChange={handlePromptZh}
+              value={promptZh}
+            />
+          </div>
+          <div className="grid gap-2">
+            <Label htmlFor="prompt-en">英文提示词</Label>
+            <Textarea
+              className="min-h-28"
+              id="prompt-en"
+              maxLength={1000}
+              onChange={handlePromptEn}
+              value={promptEn}
+            />
+          </div>
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader>
+          <CardTitle>图片</CardTitle>
+          <CardDescription>
+            {initial ? "不上传则保留原图" : "支持 PNG、JPG、WebP"}
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="grid gap-5">
+          <div className="grid gap-5 sm:grid-cols-2">
+            <ImageField
+              currentSrc={initial?.imageSrc}
+              id="image"
+              label="图片"
+              onUploaded={setImage}
+            />
+            {showSkeleton && (
+              <div className="grid content-start gap-2">
+                <ImageField
+                  currentSrc={
+                    skeleton === null ? undefined : initial?.skeletonSrc
+                  }
+                  id="skeleton"
+                  label="骨架图（可选）"
+                  onUploaded={handleSkeletonUploaded}
+                />
+                {initial?.skeletonSrc && skeleton !== null && (
+                  <Button
+                    className="w-fit"
+                    onClick={clearSkeleton}
+                    size="sm"
+                    variant="outline"
+                  >
+                    清除骨架图
+                  </Button>
+                )}
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+      <div className="flex justify-end gap-2">
         <Button onClick={goBack} variant="outline">
           取消
+        </Button>
+        <Button disabled={saving} onClick={submit}>
+          {saving ? "保存中…" : "保存"}
         </Button>
       </div>
     </div>

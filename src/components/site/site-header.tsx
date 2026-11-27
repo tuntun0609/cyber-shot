@@ -24,7 +24,7 @@ export function SiteHeader({ wide = false }: { wide?: boolean }) {
             src="/logo.svg"
             width={28}
           />
-          <span className="font-mono font-semibold tracking-tight">
+          <span className="font-heading font-semibold tracking-tight">
             cyber-shot
           </span>
         </Link>
@@ -32,7 +32,7 @@ export function SiteHeader({ wide = false }: { wide?: boolean }) {
           {NAV_ITEMS.map((item) => (
             <Link
               activeProps={{ className: "bg-muted text-foreground" }}
-              className="text-muted-foreground can-hover:hover:text-foreground rounded-lg px-3 py-1.5 text-sm transition-colors"
+              className="text-muted-foreground can-hover:hover:text-foreground rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors"
               key={item.to}
               to={item.to}
             >
