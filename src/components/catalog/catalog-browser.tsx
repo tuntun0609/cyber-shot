@@ -58,6 +58,7 @@ import type { BrowseCategory, ItemView } from "@/lib/catalog/view";
 import { CATEGORY_LABELS, GENDER_LABELS } from "@/lib/catalog/view";
 import { cn } from "@/lib/utils";
 import { CopyButton } from "./copy-button";
+import { HairLengthIcon } from "./hair-length-icon";
 import { ItemImage } from "./item-image";
 
 const CATEGORY_PATHS = {
@@ -349,7 +350,7 @@ function ItemCard({ item, search }: { item: ItemView; search: CatalogSearch }) {
             text={item.promptZh}
             variant="secondary"
           />
-          <div className="can-hover:group-hover:pointer-events-auto can-hover:group-hover:opacity-100 can-hover:focus-within:pointer-events-auto can-hover:focus-within:opacity-100 pointer-events-none absolute inset-x-0 bottom-0 flex gap-2 bg-gradient-to-t from-black/55 to-transparent p-2 pt-8 opacity-0 transition-opacity">
+          <div className="can-hover:group-hover:pointer-events-auto can-hover:group-hover:opacity-100 can-hover:focus-within:pointer-events-auto can-hover:focus-within:opacity-100 pointer-events-none absolute inset-x-0 bottom-0 flex gap-2 bg-linear-to-t from-black/55 to-transparent p-2 pt-8 opacity-0 transition-opacity">
             <CopyButton
               className="flex-1 border-0 bg-white/95 text-black shadow-none hover:bg-white"
               label="复制中文"
@@ -432,7 +433,7 @@ function LengthButton({
       onClick={handleClick}
       type="button"
     >
-      <LengthIcon height={height} />
+      <HairLengthIcon height={height} tag={tag} />
       <span className="font-medium">{label}</span>
       <span className="text-muted-foreground text-[11px] leading-none tabular-nums">
         {count}
@@ -506,18 +507,6 @@ function ResultsContent({
   }
 
   return <ItemsGrid items={visible} search={search} />;
-}
-
-function LengthIcon({ height }: { height: number }) {
-  return (
-    <span aria-hidden="true" className="relative block h-[30px] w-7">
-      <span className="absolute top-1 left-[9px] z-10 h-3 w-2.5 rounded-full bg-zinc-200 dark:bg-zinc-700" />
-      <span
-        className="absolute top-0 left-[5px] w-[18px] rounded-t-[9px] rounded-b-[3px] bg-zinc-600/85 dark:bg-zinc-300/85"
-        style={{ height }}
-      />
-    </span>
-  );
 }
 
 export function CatalogBrowser({
@@ -822,7 +811,7 @@ export function CatalogBrowser({
             </span>
           </div>
 
-          <div className="relative order-3 min-w-0 flex-1 basis-full md:order-none md:max-w-md md:basis-auto">
+          <div className="relative order-3 min-w-0 flex-1 basis-full md:order-0 md:max-w-md md:basis-auto">
             <SearchIcon className="text-muted-foreground pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2" />
             <Input
               aria-label="搜索素材"
@@ -898,7 +887,7 @@ export function CatalogBrowser({
         </div>
 
         {isHair ? (
-          <div className="flex [scrollbar-width:none] gap-1.5 overflow-x-auto px-4 pb-2.5 md:px-6 [&::-webkit-scrollbar]:hidden">
+          <div className="flex scrollbar-none gap-1.5 overflow-x-auto px-4 pb-2.5 md:px-6 [&::-webkit-scrollbar]:hidden">
             {HAIR_LENGTHS.map(({ height, label, tag }) => (
               <LengthButton
                 count={lengthCounts[tag] ?? 0}
@@ -920,8 +909,8 @@ export function CatalogBrowser({
           className={cn(
             "bg-sidebar text-sidebar-foreground sticky hidden border-r md:block",
             isHair
-              ? "top-[11.25rem] h-[calc(100svh-11.25rem)]"
-              : "top-28 h-[calc(100svh-7rem)]"
+              ? "top-51 h-[calc(100svh-12.75rem)]"
+              : "top-29.25 h-[calc(100svh-7.3125rem)]"
           )}
         >
           <ScrollArea className="h-full">
@@ -998,7 +987,7 @@ export function CatalogBrowserFallback() {
     <div aria-busy="true">
       <SiteHeader wide />
       <div className="border-b">
-        <div className="flex h-[3.75rem] items-center gap-4 px-4 md:px-6">
+        <div className="flex h-15 items-center gap-4 px-4 md:px-6">
           <Skeleton className="h-6 w-24" />
           <Skeleton className="h-10 flex-1 md:max-w-md" />
           <Skeleton className="ml-auto h-9 w-36" />

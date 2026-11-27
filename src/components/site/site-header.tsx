@@ -9,10 +9,10 @@ const NAV_ITEMS = [
 
 export function SiteHeader({ wide = false }: { wide?: boolean }) {
   return (
-    <header className="bg-background/85 sticky top-0 z-30 border-b backdrop-blur-md">
+    <header className="bg-background/85 sticky top-0 z-30 h-14 border-b backdrop-blur-md">
       <div
         className={cn(
-          "mx-auto flex h-14 items-center justify-between gap-4 px-4",
+          "mx-auto flex h-full items-center justify-between gap-4 px-4",
           wide ? "md:px-6" : "max-w-6xl sm:px-6"
         )}
       >
