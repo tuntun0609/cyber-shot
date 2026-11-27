@@ -9,6 +9,7 @@ import { uploadImage } from "@/lib/admin/admin.functions";
 export interface UploadedImage {
   aspectRatio: number;
   key: string;
+  src: string;
 }
 
 function readAspectRatio(file: File): Promise<number> {
@@ -29,17 +30,22 @@ function readAspectRatio(file: File): Promise<number> {
 
 // 选择文件后立即上传到 R2，并在浏览器里读出原图宽高比
 export function ImageField({
+  aspectRatio: currentAspectRatio,
   currentSrc,
   id,
   label,
   onUploaded,
 }: {
+  aspectRatio?: number;
   currentSrc?: string;
   id: string;
   label: string;
   onUploaded: (image: UploadedImage) => void;
 }) {
   const [preview, setPreview] = useState<string>();
+  const [previewAspectRatio, setPreviewAspectRatio] = useState<
+    number | undefined
+  >();
   const [busy, setBusy] = useState(false);
 
   const handleFile = useCallback(
@@ -53,8 +59,10 @@ export function ImageField({
         const body = new FormData();
         body.set("file", file);
         const { key } = await uploadImage({ data: body });
-        setPreview(URL.createObjectURL(file));
-        onUploaded({ aspectRatio, key });
+        const previewUrl = URL.createObjectURL(file);
+        setPreview(previewUrl);
+        setPreviewAspectRatio(aspectRatio);
+        onUploaded({ aspectRatio, key, src: previewUrl });
       } catch (error) {
         toast.error(error instanceof Error ? error.message : "上传失败");
       } finally {
@@ -71,10 +79,14 @@ export function ImageField({
   );
 
   const src = preview || currentSrc;
+  const displayAspectRatio = previewAspectRatio ?? currentAspectRatio;
   return (
-    <div className="grid gap-2">
+    <div className="grid w-full max-w-80 gap-2">
       <Label htmlFor={id}>{label}</Label>
-      <div className="bg-muted ring-foreground/8 dark:ring-foreground/10 flex aspect-square w-full max-w-48 items-center justify-center overflow-hidden rounded-2xl ring-1">
+      <div
+        className="bg-muted ring-foreground/8 dark:ring-foreground/10 flex aspect-square w-full items-center justify-center overflow-hidden rounded-2xl ring-1"
+        style={{ aspectRatio: displayAspectRatio }}
+      >
         {src ? (
           <img
             alt={label}

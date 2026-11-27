@@ -5,6 +5,7 @@ import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
 import type { UploadedImage } from "@/components/admin/image-field";
 import { ImageField } from "@/components/admin/image-field";
+import { ItemCardPreview } from "@/components/admin/item-card-preview";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -27,9 +28,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { createItem, updateItem } from "@/lib/admin/admin.functions";
 import { createItemSchema, updateItemSchema } from "@/lib/admin/schema";
 import type { Category, ItemView } from "@/lib/catalog/view";
-import { GENDER_LABELS } from "@/lib/catalog/view";
+import { CATEGORY_LABELS, GENDER_LABELS } from "@/lib/catalog/view";
 
 const TAG_SPLIT = /[,，]/u;
+const TAG_SUGGESTION_LIMIT = 10;
 const FIELD_LABELS: Record<string, string> = {
   gender: "性别",
   image: "图片",
@@ -69,6 +71,27 @@ function TagSuggestion({
   );
 }
 
+function getSkeletonStatus({
+  category,
+  initial,
+  skeleton,
+}: {
+  category: Category;
+  initial?: ItemView;
+  skeleton: string | null | undefined;
+}): string {
+  if (category !== "pose") {
+    return "不适用";
+  }
+  if (skeleton === null) {
+    return "将清除";
+  }
+  if (typeof skeleton === "string") {
+    return "待保存";
+  }
+  return initial?.skeletonSrc ? "已设置" : "无";
+}
+
 // initial 存在时为编辑模式（类别不可改），否则为新增
 export function ItemForm({
   category,
@@ -85,10 +108,11 @@ export function ItemForm({
   const [promptZh, setPromptZh] = useState(initial?.promptZh ?? "");
   const [promptEn, setPromptEn] = useState(initial?.promptEn ?? "");
   const [tagsText, setTagsText] = useState(initial?.tags.join(", ") ?? "");
-  const [image, setImage] = useState<UploadedImage>();
+  const [image, setImage] = useState<UploadedImage | undefined>();
   // undefined 保留原骨架图，null 清除，字符串为新上传的 key
   const [skeleton, setSkeleton] = useState<string | null | undefined>();
   const [saving, setSaving] = useState(false);
+  const [showAllSuggestions, setShowAllSuggestions] = useState(false);
 
   const tags = useMemo(() => parseTags(tagsText), [tagsText]);
   const addTag = useCallback(
@@ -127,6 +151,10 @@ export function ItemForm({
     []
   );
   const clearSkeleton = useCallback(() => setSkeleton(null), []);
+  const toggleSuggestions = useCallback(
+    () => setShowAllSuggestions((current) => !current),
+    []
+  );
   const goBack = useCallback(
     () =>
       router.navigate({
@@ -188,108 +216,156 @@ export function ItemForm({
 
   const showSkeleton = category === "pose";
   const suggestions = tagSuggestions.filter((tag) => !tags.includes(tag));
+  const visibleSuggestions = showAllSuggestions
+    ? suggestions
+    : suggestions.slice(0, TAG_SUGGESTION_LIMIT);
+  const hiddenSuggestionCount = Math.max(
+    suggestions.length - TAG_SUGGESTION_LIMIT,
+    0
+  );
+  const skeletonStatus = getSkeletonStatus({ category, initial, skeleton });
+  const cardPreviewSrc = image?.src ?? initial?.thumbSrc;
+  const cardPreviewAspectRatio =
+    image?.aspectRatio ??
+    initial?.thumbAspectRatio ??
+    initial?.imageAspectRatio;
+
   return (
-    <div className="grid max-w-3xl gap-5">
-      <Card>
-        <CardHeader>
-          <CardTitle>基本信息</CardTitle>
-          <CardDescription>名称、性别与标签</CardDescription>
-        </CardHeader>
-        <CardContent className="grid gap-5">
-          <div className="grid gap-5 sm:grid-cols-2">
+    <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_320px] xl:items-start">
+      <div className="grid min-w-0 gap-5">
+        <Card>
+          <CardHeader>
+            <CardTitle>基本信息</CardTitle>
+            <CardDescription>名称、性别与标签</CardDescription>
+          </CardHeader>
+          <CardContent className="grid gap-5">
+            <div className="grid gap-5 sm:grid-cols-2">
+              <div className="grid gap-2">
+                <Label htmlFor="name">名称</Label>
+                <Input
+                  id="name"
+                  maxLength={50}
+                  onChange={handleName}
+                  value={name}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="gender">性别</Label>
+                <Select
+                  items={GENDER_LABELS}
+                  onValueChange={handleGender}
+                  value={gender}
+                >
+                  <SelectTrigger className="w-full" id="gender">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Object.entries(GENDER_LABELS).map(([value, label]) => (
+                      <SelectItem key={value} value={value}>
+                        {label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
             <div className="grid gap-2">
-              <Label htmlFor="name">名称</Label>
-              <Input
-                id="name"
-                maxLength={50}
-                onChange={handleName}
-                value={name}
+              <Label htmlFor="tags">标签</Label>
+              <Input id="tags" onChange={handleTags} value={tagsText} />
+              <p className="text-muted-foreground text-xs">
+                逗号分隔，最多 10 个
+              </p>
+              {suggestions.length > 0 ? (
+                <div className="grid gap-1.5">
+                  <span className="text-muted-foreground text-xs">
+                    常用标签
+                  </span>
+                  <div className="flex flex-wrap items-center gap-1">
+                    {visibleSuggestions.map((tag) => (
+                      <TagSuggestion key={tag} onAdd={addTag} tag={tag} />
+                    ))}
+                    {hiddenSuggestionCount > 0 && (
+                      <Button
+                        aria-expanded={showAllSuggestions}
+                        className="text-muted-foreground"
+                        onClick={toggleSuggestions}
+                        size="xs"
+                        variant="ghost"
+                      >
+                        {showAllSuggestions
+                          ? "收起标签"
+                          : `展开其余 ${hiddenSuggestionCount} 个`}
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              ) : null}
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>提示词</CardTitle>
+            <CardDescription>中英文并排，便于对照</CardDescription>
+          </CardHeader>
+          <CardContent className="grid gap-5 sm:grid-cols-2">
+            <div className="grid content-start gap-2">
+              <Label htmlFor="prompt-zh">中文提示词</Label>
+              <Textarea
+                className="min-h-28"
+                id="prompt-zh"
+                maxLength={1000}
+                onChange={handlePromptZh}
+                value={promptZh}
               />
             </div>
-            <div className="grid gap-2">
-              <Label htmlFor="gender">性别</Label>
-              <Select
-                items={GENDER_LABELS}
-                onValueChange={handleGender}
-                value={gender}
-              >
-                <SelectTrigger className="w-full" id="gender">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {Object.entries(GENDER_LABELS).map(([value, label]) => (
-                    <SelectItem key={value} value={value}>
-                      {label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+            <div className="grid content-start gap-2">
+              <Label htmlFor="prompt-en">英文提示词</Label>
+              <Textarea
+                className="min-h-28"
+                id="prompt-en"
+                maxLength={1000}
+                onChange={handlePromptEn}
+                value={promptEn}
+              />
             </div>
-          </div>
-          <div className="grid gap-2">
-            <Label htmlFor="tags">标签</Label>
-            <Input id="tags" onChange={handleTags} value={tagsText} />
-            <p className="text-muted-foreground text-xs">
-              逗号分隔，最多 10 个
-            </p>
-            {suggestions.length > 0 ? (
-              <div className="grid gap-1.5">
-                <span className="text-muted-foreground text-xs">常用标签</span>
-                <div className="flex flex-wrap gap-1">
-                  {suggestions.map((tag) => (
-                    <TagSuggestion key={tag} onAdd={addTag} tag={tag} />
-                  ))}
-                </div>
-              </div>
-            ) : null}
-          </div>
-        </CardContent>
-      </Card>
-      <Card>
-        <CardHeader>
-          <CardTitle>提示词</CardTitle>
-          <CardDescription>用于生成的中英文描述</CardDescription>
-        </CardHeader>
-        <CardContent className="grid gap-5">
-          <div className="grid gap-2">
-            <Label htmlFor="prompt-zh">中文提示词</Label>
-            <Textarea
-              className="min-h-28"
-              id="prompt-zh"
-              maxLength={1000}
-              onChange={handlePromptZh}
-              value={promptZh}
-            />
-          </div>
-          <div className="grid gap-2">
-            <Label htmlFor="prompt-en">英文提示词</Label>
-            <Textarea
-              className="min-h-28"
-              id="prompt-en"
-              maxLength={1000}
-              onChange={handlePromptEn}
-              value={promptEn}
-            />
-          </div>
-        </CardContent>
-      </Card>
-      <Card>
-        <CardHeader>
-          <CardTitle>图片</CardTitle>
-          <CardDescription>
-            {initial ? "不上传则保留原图" : "支持 PNG、JPG、WebP"}
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="grid gap-5">
-          <div className="grid gap-5 sm:grid-cols-2">
+          </CardContent>
+        </Card>
+      </div>
+      <div className="grid min-w-0 gap-5 xl:sticky xl:top-6 xl:max-h-[calc(100svh-3rem)] xl:self-start xl:overflow-y-auto xl:overscroll-contain xl:pr-1">
+        <Card>
+          <CardHeader>
+            <CardTitle>素材图片</CardTitle>
+            <CardDescription>
+              {initial ? "不上传则保留原图" : "支持 PNG、JPG、WebP"}
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="grid gap-5">
             <ImageField
+              aspectRatio={initial?.imageAspectRatio}
               currentSrc={initial?.imageSrc}
               id="image"
               label="图片"
               onUploaded={setImage}
             />
+            <div className="grid gap-2 border-t pt-4">
+              <div className="flex items-baseline justify-between gap-3">
+                <span className="text-xs font-medium">列表卡片预览</span>
+                <span className="text-muted-foreground text-xs">
+                  保存后生效
+                </span>
+              </div>
+              <ItemCardPreview
+                category={category}
+                gender={gender}
+                imageSrc={cardPreviewSrc}
+                name={name}
+                tags={tags}
+                thumbAspectRatio={cardPreviewAspectRatio}
+              />
+            </div>
             {showSkeleton && (
-              <div className="grid content-start gap-2">
+              <div className="grid content-start gap-2 border-t pt-5">
                 <ImageField
                   currentSrc={
                     skeleton === null ? undefined : initial?.skeletonSrc
@@ -310,10 +386,38 @@ export function ItemForm({
                 )}
               </div>
             )}
-          </div>
-        </CardContent>
-      </Card>
-      <div className="flex justify-end gap-2">
+            <div className="grid grid-cols-3 gap-2 border-t pt-3 text-xs">
+              <div className="grid gap-0.5">
+                <span className="text-muted-foreground">类别</span>
+                <span>{CATEGORY_LABELS[category]}</span>
+              </div>
+              <div className="grid gap-0.5">
+                <span className="text-muted-foreground">ID</span>
+                <span className="tabular-nums">
+                  {initial ? `#${initial.id}` : "保存后生成"}
+                </span>
+              </div>
+              <div className="grid gap-0.5">
+                <span className="text-muted-foreground">骨架图</span>
+                <span>{skeletonStatus}</span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+      <div className="bg-background/90 ring-foreground/8 dark:ring-foreground/10 sticky bottom-4 z-10 flex flex-wrap items-center justify-end gap-2 rounded-2xl p-3 ring-1 backdrop-blur-md xl:col-span-2">
+        {cardPreviewSrc ? (
+          <img
+            alt="当前素材图片"
+            className="ring-foreground/8 dark:ring-foreground/10 size-8 shrink-0 rounded-lg object-cover ring-1"
+            height={32}
+            src={cardPreviewSrc}
+            width={32}
+          />
+        ) : null}
+        <p className="text-muted-foreground mr-auto text-xs">
+          保存后返回{CATEGORY_LABELS[category]}列表
+        </p>
         <Button onClick={goBack} variant="outline">
           取消
         </Button>
