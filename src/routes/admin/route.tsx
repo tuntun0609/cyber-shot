@@ -7,6 +7,8 @@ import {
 import type { LucideIcon } from "lucide-react";
 import {
   ArrowLeftIcon,
+  PanelLeftCloseIcon,
+  PanelLeftOpenIcon,
   PersonStandingIcon,
   ScissorsIcon,
   ShirtIcon,
@@ -25,6 +27,7 @@ import {
   SidebarMenuItem,
   SidebarProvider,
   SidebarTrigger,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import type { Category } from "@/lib/catalog/view";
 import { CATEGORY_LABELS, CATEGORY_ORDER } from "@/lib/catalog/view";
@@ -58,6 +61,7 @@ function CategoryNavItem({ category }: { category: Category }) {
         render={
           <Link params={{ category }} search={{}} to="/admin/$category" />
         }
+        tooltip={CATEGORY_LABELS[category]}
       >
         <Icon />
         <span>{CATEGORY_LABELS[category]}</span>
@@ -66,13 +70,33 @@ function CategoryNavItem({ category }: { category: Category }) {
   );
 }
 
+function SidebarCollapseMenuItem() {
+  const { isMobile, state, toggleSidebar } = useSidebar();
+  if (isMobile) {
+    return null;
+  }
+  const collapsed = state === "collapsed";
+  const label = collapsed ? "展开侧边栏" : "收起侧边栏";
+  const Icon = collapsed ? PanelLeftOpenIcon : PanelLeftCloseIcon;
+  return (
+    <SidebarMenuItem>
+      <SidebarMenuButton onClick={toggleSidebar} tooltip={label}>
+        <Icon />
+        <span>{label}</span>
+      </SidebarMenuButton>
+    </SidebarMenuItem>
+  );
+}
+
 function AdminLayout() {
   return (
     <SidebarProvider>
-      <Sidebar>
-        <SidebarHeader className="p-3">
+      <Sidebar collapsible="icon">
+        <SidebarHeader className="p-3 group-data-[collapsible=icon]:p-2">
           <Link
-            className="flex items-center gap-2 rounded-xl px-2 py-1.5"
+            aria-label="cyber-shot 素材后台"
+            className="flex items-center gap-2 rounded-xl px-2 py-1.5 group-data-[collapsible=icon]:size-8 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:gap-0 group-data-[collapsible=icon]:px-0 group-data-[collapsible=icon]:py-0"
+            title="cyber-shot 素材后台"
             to="/"
           >
             <img
@@ -82,7 +106,7 @@ function AdminLayout() {
               src="/logo.svg"
               width={28}
             />
-            <div className="grid leading-tight">
+            <div className="grid leading-tight group-data-[collapsible=icon]:hidden">
               <span className="font-heading font-semibold tracking-tight">
                 cyber-shot
               </span>
@@ -105,11 +129,12 @@ function AdminLayout() {
         <SidebarFooter>
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton render={<Link to="/" />}>
+              <SidebarMenuButton render={<Link to="/" />} tooltip="返回前台">
                 <ArrowLeftIcon />
                 <span>返回前台</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
+            <SidebarCollapseMenuItem />
           </SidebarMenu>
         </SidebarFooter>
       </Sidebar>
