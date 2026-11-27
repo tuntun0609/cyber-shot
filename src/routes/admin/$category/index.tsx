@@ -1,10 +1,10 @@
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import {
+  EyeIcon,
   EyeOffIcon,
   PencilIcon,
   PlusIcon,
   SearchIcon,
-  Undo2Icon,
 } from "lucide-react";
 import type { ChangeEvent } from "react";
 import { useCallback, useMemo } from "react";
@@ -50,8 +50,9 @@ export const Route = createFileRoute("/admin/$category/")({
 const GENDER_ITEMS = { all: "全部性别", ...GENDER_LABELS };
 const ACTION_BUTTON_CLASS = "w-7 px-0 xl:w-auto xl:min-w-20 xl:px-3";
 const ACTION_LABEL_CLASS = "hidden xl:inline";
+const STATUS_ACTION_BUTTON_CLASS = "min-w-16 px-2 xl:min-w-20 xl:px-3";
 const ACTION_COLUMN_CLASS =
-  "sticky right-0 z-10 w-24 bg-card shadow-[inset_1px_0_0_var(--border)] transition-colors group-hover/row:bg-muted/50 xl:w-48";
+  "sticky right-0 z-10 w-32 bg-card shadow-[inset_1px_0_0_var(--border)] transition-colors group-hover/row:bg-muted/50 xl:w-48";
 
 function matches(
   item: ItemView,
@@ -88,19 +89,22 @@ function ToggleButton({
   onToggle: (item: ItemView) => void;
 }) {
   const handleClick = useCallback(() => onToggle(item), [item, onToggle]);
-  const Icon = item.deprecated ? Undo2Icon : EyeOffIcon;
-  const label = item.deprecated ? "恢复" : "下架";
+  const Icon = item.deprecated ? EyeIcon : EyeOffIcon;
+  const label = item.deprecated ? "上架" : "下架";
+  const actionToneClass = item.deprecated
+    ? "border-success/30 bg-success/10 text-success hover:bg-success/15 hover:text-success"
+    : "border-destructive/30 bg-destructive/5 text-destructive hover:bg-destructive/10 hover:text-destructive dark:border-destructive/40 dark:bg-destructive/10";
   return (
     <Button
       aria-label={label}
-      className={cn(ACTION_BUTTON_CLASS, "text-foreground")}
+      className={cn(STATUS_ACTION_BUTTON_CLASS, actionToneClass)}
       onClick={handleClick}
       size="sm"
       title={label}
       variant="outline"
     >
       <Icon />
-      <span className={ACTION_LABEL_CLASS}>{label}</span>
+      <span>{label}</span>
     </Button>
   );
 }
@@ -300,7 +304,11 @@ function AdminCatalogList() {
                 </TableCell>
                 <TableCell>
                   <Badge
-                    className={cn(item.deprecated && "text-muted-foreground")}
+                    className={cn(
+                      item.deprecated
+                        ? "text-muted-foreground"
+                        : "bg-success/10 text-success"
+                    )}
                     variant={item.deprecated ? "outline" : "secondary"}
                   >
                     {item.deprecated ? "已下架" : "上架中"}
