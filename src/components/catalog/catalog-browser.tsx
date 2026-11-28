@@ -335,7 +335,7 @@ function ItemCard({ item, search }: { item: ItemView; search: CatalogSearch }) {
               </div>
             </div>
           </Link>
-          {item.gender === "male" ? (
+          {item.category !== "hair" && item.gender === "male" ? (
             <Badge
               className="absolute top-2 left-2 rounded-md bg-white/90 px-1.5 text-[11px] text-black shadow-sm"
               variant="secondary"
